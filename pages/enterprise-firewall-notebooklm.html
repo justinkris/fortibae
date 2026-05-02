@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — NotebookLM Prompts</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  body { background: var(--cream); }
+
+  /* ── HEADER ── */
+  .nlm-header {
+    padding: 40px 60px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--cream);
+  }
+  .nlm-header h1 { margin-top: 14px; }
+  .nlm-header-meta {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+    max-width: 620px;
+  }
+
+  /* ── HOW-TO BANNER ── */
+  .how-to-banner {
+    margin: 32px 60px 0;
+    background: var(--orange-light);
+    border: 1px solid var(--orange-border);
+    border-radius: 16px;
+    padding: 18px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .how-to-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--orange);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+  }
+  .how-to-body { flex: 1; }
+  .how-to-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--orange);
+    margin-bottom: 4px;
+  }
+  .how-to-text {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+  .how-to-steps {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .how-to-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .step-num {
+    width: 20px;
+    height: 20px;
+    background: var(--orange);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .nlm-body {
+    padding: 40px 60px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  /* ── DOMAIN BLOCK ── */
+  .domain-block { display: flex; flex-direction: column; gap: 16px; }
+  .domain-label-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .domain-num-badge {
+    background: var(--ink);
+    color: var(--cream);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    padding: 4px 12px;
+    border-radius: 20px;
+    flex-shrink: 0;
+  }
+  .domain-label-text { flex: 1; }
+  .domain-label-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .domain-label-desc {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  .domain-prompt-count {
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  /* ── PROMPT CARDS GRID ── */
+  .prompts-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  /* ── PROMPT CARD ── */
+  .prompt-card {
+    flex: 1;
+    min-width: 0;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s ease;
+  }
+  .prompt-card:hover { box-shadow: 0 8px 28px rgba(26,18,9,0.09); }
+
+  /* ── COLLAPSE ── */
+  .prompt-card-head {
+    padding: 18px 20px 14px;
+    background: var(--cream-dark);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .prompt-card.expanded .prompt-card-head {
+    border-bottom: 1px solid var(--border);
+  }
+  .prompt-chevron {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--ink-muted);
+    margin-top: 2px;
+    transition: transform 0.25s ease;
+  }
+  .prompt-card.expanded .prompt-chevron { transform: rotate(180deg); }
+  .prompt-card-head:hover .prompt-chevron { color: var(--ink); }
+
+  .prompt-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+  .prompt-card.expanded .prompt-body {
+    grid-template-rows: 1fr;
+  }
+  .prompt-body-inner {
+    overflow: hidden;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .prompt-card.expanded .prompt-body-inner {
+    padding: 16px 20px;
+  }
+  .prompt-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+  }
+  .prompt-head-text { flex: 1; min-width: 0; }
+  .prompt-episode {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    margin-bottom: 3px;
+  }
+  .prompt-title {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+  }
+  .prompt-lessons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .lesson-pill {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+  }
+
+  .prompt-text {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-style: italic;
+    flex: 1;
+    position: relative;
+  }
+  .prompt-text::before {
+    content: '"';
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    color: var(--border);
+    position: absolute;
+    top: -4px;
+    left: 10px;
+    line-height: 1;
+  }
+
+  .prompt-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .prompt-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .prompt-tag {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: var(--blue-light);
+    border: 1px solid var(--blue-border);
+    color: var(--blue);
+  }
+  .prompt-tag.tag-exam {
+    background: var(--orange-light);
+    border-color: var(--orange-border);
+    color: var(--orange);
+  }
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--orange);
+    background: none;
+    border: 1px solid var(--orange-border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover { background: var(--orange-light); }
+  .copy-btn.copied {
+    background: var(--green-light);
+    border-color: var(--green-border);
+    color: var(--green);
+  }
+  .copy-btn svg { flex-shrink: 0; }
+
+  /* ── DOMAIN COLOR ACCENTS ── */
+  .domain-d1 .prompt-episode { color: var(--orange); }
+  .domain-d1 .prompt-icon { background: var(--orange-light); border: 1px solid var(--orange-border); }
+  .domain-d2 .prompt-episode { color: var(--blue); }
+  .domain-d2 .prompt-icon { background: var(--blue-light); border: 1px solid var(--blue-border); }
+  .domain-d3 .prompt-episode { color: var(--red); }
+  .domain-d3 .prompt-icon { background: var(--red-light); border: 1px solid var(--red-border); }
+  .domain-d4 .prompt-episode { color: var(--green); }
+  .domain-d4 .prompt-icon { background: var(--green-light); border: 1px solid var(--green-border); }
+  .domain-d5 .prompt-episode { color: var(--purple); }
+  .domain-d5 .prompt-icon { background: var(--purple-light); border: 1px solid var(--purple-border); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .nlm-header { padding: 24px 20px 24px; }
+    .how-to-banner { margin: 20px 20px 0; }
+    .nlm-body { padding: 28px 20px 60px; }
+    .prompts-grid { flex-wrap: wrap; }
+    .prompt-card { flex: 1 1 280px; }
+    .how-to-steps { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nlm-header">
+  <div class="breadcrumb">
+    <a href="../index.html">NSE7</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Enterprise Firewall 7.6</span>
+    <span class="breadcrumb-sep">/</span>
+    <a href="enterprise-firewall-notebooklm-hub.html">NotebookLM</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Deep Dives</span>
+  </div>
+  <div class="day-badge" style="margin-top:14px;">
+    <span class="day-badge-dot"></span>
+    NOTEBOOKLM · AUDIO OVERVIEW PROMPTS
+  </div>
+  <h1>Podcast <em>Prompts</em></h1>
+  <p class="nlm-header-meta">One prompt per domain. Paste into NotebookLM's Audio Overview field after uploading your study materials — each prompt frames a scenario that gets the hosts telling the story behind the technology, not just reciting it.</p>
+</div>
+
+<div class="how-to-banner">
+  <div class="how-to-icon">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2zm0 3v4l3 1.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="how-to-body">
+    <div class="how-to-title">HOW TO USE</div>
+    <div class="how-to-text">Upload your study materials to NotebookLM, then use these prompts in the Audio Overview customisation box before generating.</div>
+    <div class="how-to-steps">
+      <div class="how-to-step">
+        <div class="step-num">1</div>
+        <span>Upload your notes or the study guide PDF to a new NotebookLM notebook</span>
+      </div>
+      <div class="how-to-step">
+        <div class="step-num">2</div>
+        <span>Click <strong>Audio Overview</strong> → <strong>Customise</strong></span>
+      </div>
+      <div class="how-to-step">
+        <div class="step-num">3</div>
+        <span>Copy a prompt below and paste it into the customisation field</span>
+      </div>
+      <div class="how-to-step">
+        <div class="step-num">4</div>
+        <span>Click <strong>Generate</strong> and let the hosts do the work</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nlm-body">
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 1 — SYSTEM CONFIGURATION & SECURITY FABRIC
+       ════════════════════════════════════════════ -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 1</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">System Configuration &amp; Security Fabric</div>
+        <div class="domain-label-desc">Architecture, VLANs &amp; VDOMs, High Availability, Security Fabric, Hardware Acceleration</div>
+      </div>
+      <div class="domain-prompt-count">3 PROMPTS</div>
+    </div>
+
+    <div class="prompts-grid">
+
+      <!-- Prompt D1-A -->
+      <div class="prompt-card domain-d1">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🏛️</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 1</div>
+            <div class="prompt-title">Designing the Fortress From Scratch</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L1 · ARCHITECTURE</span>
+              <span class="lesson-pill">L3 · VLANs &amp; VDOMs</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d1a">You're two network security consultants who've just been handed a blank floor plan for a brand-new enterprise campus — headquarters, two data centres, and sixty branch offices. Your job: design the firewall architecture from scratch with zero budget constraints. Walk through why you'd place a Data Center Firewall at the network core, an Internal Segmentation Firewall between business units, and a Distributed Enterprise Firewall at every remote branch — mapping specific FortiGate hardware series to each location based on throughput needs. Then debate whether Zero Trust Network Access actually changes the deployment model or just rebrands existing concepts. Close by explaining how VLANs and VDOMs let a single FortiGate behave like multiple independent firewalls — use the analogy of apartments in a skyscraper versus building separate houses.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">DCFW · ISFW · DEFW</span>
+              <span class="prompt-tag">VDOMs</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d1a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- Prompt D1-B -->
+      <div class="prompt-card domain-d1">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">💔</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 1</div>
+            <div class="prompt-title">The Day the Firewall Died</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L4 · HIGH AVAILABILITY</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d1b">Frame this as a true-crime podcast about the most catastrophic network outage you can imagine — a hospital's firewall fails mid-surgery because there was no redundancy. The villain is a single point of failure. The heroes are two FortiGate units running FGCP. Walk through how Active-Passive and Active-Active HA modes each respond to that moment of failure, debate which mode you'd choose for a hospital versus a video streaming platform, and break down the primary election algorithm step by step — ports monitored, uptime, priority, serial number — and why the order flips when override is turned on. End with the one CLI command that forces a failover for maintenance and the one situation where you'd actually use it.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">FGCP A/P · A/A</span>
+              <span class="prompt-tag">Primary Election</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d1b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- Prompt D1-C -->
+      <div class="prompt-card domain-d1">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">⚡</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 1</div>
+            <div class="prompt-title">The Smart Home That Fights Back</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L9 · SECURITY FABRIC</span>
+              <span class="lesson-pill">L10 · HW ACCELERATION</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d1c">Imagine Fortinet's Security Fabric is an AI-powered smart home where every device — the thermostat, the cameras, the door locks — all talk to each other and act automatically when something goes wrong. Explain how Broad, Integrated, and Automated security works in plain English using that analogy. Walk through a real automation stitch: an IOC is detected on an endpoint, a trigger fires, and the endpoint is quarantined within seconds — no human involved. Then pivot to the hardware that makes packet processing fast enough for this to work in real time: the NP processor (the home's fiber connection), the CP processor (the security camera's local AI chip), and the SOC chip (the all-in-one hub that does both). Explain exactly what each chip offloads and what it can't touch.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">Automation Stitches</span>
+              <span class="prompt-tag">NP7 · CP9 · SOC5</span>
+              <span class="prompt-tag tag-exam">Exam Weight: Medium</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d1c', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 2 — CENTRAL MANAGEMENT
+       ════════════════════════════════════════════ -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 2</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Central Management</div>
+        <div class="domain-label-desc">FortiManager ADOMs, provisioning, policy layers, scripts, ZTP/LTP</div>
+      </div>
+      <div class="domain-prompt-count">2 PROMPTS</div>
+    </div>
+
+    <div class="prompts-grid">
+
+      <!-- Prompt D2-A -->
+      <div class="prompt-card domain-d2">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🏢</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 2</div>
+            <div class="prompt-title">Running a 200-Site Empire</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L2 · CENTRAL MANAGEMENT</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d2a">Two ex-network engineers at a global bank are discovering FortiManager for the first time after years of managing 200 firewalls individually with SSH and spreadsheets. Walk through the ADOM architecture as if it's an org chart — each ADOM is a business division with its own IT team, and the Global database is the CFO who sets rules everyone follows. Explain the critical distinction between the Device layer and Policy layer, walk through all five install operations (Retrieve, Import, Install, Quick Install, Reinstall) using the analogy of syncing a phone, and reveal how dynamic objects and metadata variables let you write one policy and deploy it to 200 branches simultaneously. End with a debate: ZTP for a brand-new branch versus LTP for a replacement device — which wins and why?</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">ADOMs</span>
+              <span class="prompt-tag">ZTP · LTP</span>
+              <span class="prompt-tag">Metadata Variables</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d2a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- Prompt D2-B -->
+      <div class="prompt-card domain-d2">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🤖</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 2</div>
+            <div class="prompt-title">The Script That Runs the Network</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L2 · SCRIPTS &amp; TEMPLATES</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d2b">You're a network automation engineer who just convinced your CISO to stop doing manual config changes. Walk through FortiManager's four script types — Remote CLI, Device DB, Policy Package, and CLI Template — using the analogy of different ways to give instructions to a contractor: shouting commands directly, editing blueprints, changing the project spec, or writing a standing operating procedure. Explain when each type runs and what it touches. Then drill into the difference between Pre-run CLI templates (which auto-detach once run) versus persistent CLI templates, and why that distinction matters the moment you push a firmware upgrade to 200 devices at 2am. Close by describing the ideal automation workflow for onboarding a brand-new FortiGate with zero manual touch.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">CLI Templates</span>
+              <span class="prompt-tag">Script Types</span>
+              <span class="prompt-tag tag-exam">Exam Weight: Medium</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d2b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 3 — SECURITY PROFILES
+       ════════════════════════════════════════════ -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 3</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Security Profiles</div>
+        <div class="domain-label-desc">SSL/TLS inspection, web filter, application control, ISDB, IPS</div>
+      </div>
+      <div class="domain-prompt-count">2 PROMPTS</div>
+    </div>
+
+    <div class="prompts-grid">
+
+      <!-- Prompt D3-A -->
+      <div class="prompt-card domain-d3">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🔍</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 3</div>
+            <div class="prompt-title">Reading Encrypted Mail Without Opening It</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L6 · SSL/TLS INSPECTION</span>
+              <span class="lesson-pill">L6 · WEB FILTER</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d3a">A Fortune 500 employee just downloaded ransomware through an HTTPS link — and the firewall had absolutely no idea because the traffic was encrypted. Start there. Explain how SSL/TLS inspection works as a "man in the middle for good" — the firewall intercepts, decrypts, inspects, and re-encrypts traffic before it reaches the user. Walk through the full TLS handshake like it's a secret-agent handshake at a private club, explain why TLS 1.0 and 1.1 got kicked out of the club, and then tackle the curveball: HTTP/3 runs over QUIC over UDP — why does that break traditional inspection? Bring in the three inspection layers: Web Filter as the address cop (URL and domain only), Application Control as the behavioral detective (what is this app actually doing?), and ISDB as the address book that only knows IP and port. What can each see, and where does each fall short?</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">TLS 1.2 · 1.3</span>
+              <span class="prompt-tag">HTTP/3 · QUIC</span>
+              <span class="prompt-tag">ISDB</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d3a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- Prompt D3-B -->
+      <div class="prompt-card domain-d3">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🛡️</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 3</div>
+            <div class="prompt-title">The Network's Immune System</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L6 · IPS PROFILES</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d3b">Compare the network's Intrusion Prevention System to the human immune system — it does nothing until it recognises a threat pattern, then it acts precisely and fast. Walk through how FortiGate IPS profiles work: the difference between filter type (category-based, like vaccinations for a class of viruses) and individual signatures (custom antibodies for a specific known strain), how severity levels and target (client vs server) narrow down which signatures matter for a given network, and what the action options — monitor, block, reset, quarantine — look like in practice. Then tell the story of hping3: a tool that sends crafted attack packets to test whether your IPS actually fires. Why would a defender run an attack simulator against their own firewall, and what result proves the IPS is working?</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">IPS Signatures</span>
+              <span class="prompt-tag">hping3</span>
+              <span class="prompt-tag tag-exam">Exam Weight: Medium</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d3b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 4 — ROUTING
+       ════════════════════════════════════════════ -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 4</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Routing</div>
+        <div class="domain-label-desc">OSPF area design, redistribution, BGP for enterprise WAN, ECMP, FortiManager templates</div>
+      </div>
+      <div class="domain-prompt-count">2 PROMPTS</div>
+    </div>
+
+    <div class="prompts-grid">
+
+      <!-- Prompt D4-A -->
+      <div class="prompt-card domain-d4">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🗺️</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 4</div>
+            <div class="prompt-title">Two Routers Walk Into a WAN</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L5 · OSPF</span>
+              <span class="lesson-pill">L5 · BGP</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d4a">Frame this as a travel documentary. OSPF is the GPS that builds a complete map of every road in the city — it knows every intersection, every shortcut, and recalculates instantly when a road closes. Explain link-state routing in plain English, walk through Dijkstra's shortest path algorithm using a city map analogy, and introduce the three OSPF router types (Backbone, ABR, ASBR) as the city planner, the suburb connector, and the border crossing agent. Then BGP is the international postal network — it doesn't know road conditions, it knows who controls which postal district and negotiates the best routes based on policy, not just speed. Contrast IBGP (same company's internal postal offices) versus EBGP (agreements between different companies), explain AS path manipulation as "making your route look shorter on paper," and close with how ECMP lets you use both motorways simultaneously instead of picking just one.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">OSPF · SPF</span>
+              <span class="prompt-tag">BGP IBGP · EBGP</span>
+              <span class="prompt-tag">ECMP</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d4a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- Prompt D4-B -->
+      <div class="prompt-card domain-d4">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🔀</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 4</div>
+            <div class="prompt-title">The Art of the Translation Layer</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L5 · REDISTRIBUTION</span>
+              <span class="lesson-pill">L5 · FORTIMGR TEMPLATES</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d4b">You're the network architect at a company that just acquired a smaller firm — they run OSPF internally, you run BGP, and nothing talks to anything. This is the redistribution problem. Explain why redistribution is disabled by default in FortiOS (a safety net against routing loops and route feedback) and walk through what it actually means to redistribute OSPF routes into BGP and vice versa — what information gets carried across and what gets lost in translation. Then tackle the loopback-as-BGP-source trick: why use a loopback interface instead of a physical port, how update-source and ebgp-enforce-multihop work together, and what breaks without them. Close by explaining how FortiManager routing templates turn a complex multi-router BGP deployment into a parameterised template you deploy once and push everywhere.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">Redistribution</span>
+              <span class="prompt-tag">Loopback BGP Source</span>
+              <span class="prompt-tag tag-exam">Exam Weight: Medium</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d4b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 5 — VPN TECHNOLOGIES
+       ════════════════════════════════════════════ -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 5</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">VPN Technologies</div>
+        <div class="domain-label-desc">IPsec IKEv2, DH groups, PFS, DPD, ADVPN shortcut tunnels, FortiManager templates</div>
+      </div>
+      <div class="domain-prompt-count">2 PROMPTS</div>
+    </div>
+
+    <div class="prompts-grid">
+
+      <!-- Prompt D5-A -->
+      <div class="prompt-card domain-d5">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🕵️</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 5</div>
+            <div class="prompt-title">Fifty Safe Houses, One Network</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L7 · IPsec IKEv2</span>
+              <span class="lesson-pill">L7 · DH · PFS · DPD</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d5a">You're two intelligence officers designing secure communications between 50 field offices — and every conversation must be unbreakable even if a key is ever compromised. Walk through IPsec as the armoured vehicle for data: why it's the gold standard for site-to-site encryption, and how the five topologies (site-to-site, hub-spoke, dual hub, full mesh, ADVPN) are like choosing between a direct road, a star network of highways, a resilient dual-hub ring, a full mesh of private tunnels, or a smart network that builds shortcuts on demand. Deep-dive IKEv2's advantages over IKEv1 — AES-GCM, EAP authentication, stronger Diffie-Hellman groups. Explain Perfect Forward Secrecy as "burning the codebook after every single message." Then debate the three Dead Peer Detection modes — on-demand, on-idle, disabled — using the analogy of checking if a colleague is still at their desk.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">IKEv2</span>
+              <span class="prompt-tag">PFS</span>
+              <span class="prompt-tag">DPD Modes</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d5a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- Prompt D5-B -->
+      <div class="prompt-card domain-d5">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">✨</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">EPISODE · DOMAIN 5</div>
+            <div class="prompt-title">The Tunnel That Builds Itself</div>
+            <div class="prompt-lessons">
+              <span class="lesson-pill">L8 · ADVPN</span>
+              <span class="lesson-pill">L8 · SHORTCUT TUNNELS</span>
+            </div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="prompt-text" id="prompt-d5b">You have 200 branch offices, all connected back to headquarters via a hub-and-spoke VPN — but now branch A needs to transfer a huge file to branch B, and every packet is making a detour through HQ first, saturating the hub. This is the problem ADVPN was built to solve. Walk through how ADVPN gives you hub-and-spoke management simplicity but full-mesh performance: the hub is the matchmaker, the spokes are the couples, and shortcut tunnels are direct connections that spring into existence the moment two branches need to talk directly. Explain the exact config that makes it work — why the hub needs type dynamic and auto-discovery-sender, why spokes need auto-discovery-receiver and net-device enabled, why IKEv2 is not optional here, and why static routes on the hub would completely break spoke subnet discovery. Close by walking through a FortiManager template that deploys ADVPN to all 200 branches using metadata variables for per-site addressing.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">ADVPN</span>
+              <span class="prompt-tag">Shortcut Tunnels</span>
+              <span class="prompt-tag">FortiMgr Templates</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('prompt-d5b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end .nlm-body -->
+
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+  <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · NotebookLM Prompts</div>
+</footer>
+
+<script>
+  function togglePrompt(card) {
+    card.classList.toggle('expanded');
+  }
+
+  function copyPrompt(id, btn) {
+    btn.closest('.prompt-card').classList.add('expanded');
+    const el = document.getElementById(id);
+    const text = el.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Copy`;
+      }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

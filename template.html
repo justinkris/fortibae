@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day XX — Topic Title</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/template.css">
+<style>
+  /* Page-specific overrides only — do not modify study-guide.css */
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="breadcrumb">
+      <a href="../index.html">Study Plan</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="index.html">Study Guides</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>Day XX</span>
+    </div>
+    <div class="day-badge">
+      <span class="day-badge-dot"></span>
+      DAY XX · TOPIC NAME
+    </div>
+    <h1>Topic <em>Title</em></h1>
+    <div class="header-meta-row">
+      <span class="tag tag-zia">ZIA</span>
+      <span class="tag tag-zpa">ZPA</span>
+      <span class="tag tag-arch">Architecture</span>
+      <span class="tag tag-weight">High Weight</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="progress-card">
+      <div class="big" id="prog-num">0<span style="font-size:18px;color:#7a6a55;">%</span></div>
+      <div class="lbl">REVIEWED</div>
+    </div>
+    <div class="nav-hub">
+      <div class="nav-hub-trigger">
+        <div class="icon">📚</div>
+        <div class="label">STUDY MATERIALS</div>
+        <div class="hint">hover to explore</div>
+      </div>
+      <div class="nav-hub-dropdown">
+        <a class="nav-hub-item" href="index.html"><span class="nav-icon">📖</span> STUDY GUIDES</a>
+        <a class="nav-hub-item" href="../memory-palaces/index.html"><span class="nav-icon">🧠</span> MEMORY PALACES</a>
+        <a class="nav-hub-item" href="../study-bites/index.html"><span class="nav-icon">🍐</span> STUDY BITES</a>
+        <a class="nav-hub-item" href="../study-nibbles/index.html"><span class="nav-icon">🍔</span> STUDY NIBBLES</a>
+        <a class="nav-hub-item" href="../mock-exams/index.html"><span class="nav-icon">📋</span> MOCK EXAMS</a>
+        <a class="nav-hub-item" href="../lab-challenges/index.html"><span class="nav-icon">⚗️</span> LAB CHALLENGES</a>
+        <a class="nav-hub-item" href="../notebooklm/index.html"><span class="nav-icon">🎙️</span> NOTEBOOKLM</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="section-nav">
+  <button class="nav-tab active" onclick="navTo('section-overview', this)">Overview</button>
+  <button class="nav-tab" onclick="navTo('section-topic-a', this)">Topic A</button>
+  <button class="nav-tab" onclick="navTo('section-topic-b', this)">Topic B</button>
+  <button class="nav-tab" onclick="navTo('section-exam-tips', this)">Exam Tips</button>
+</nav>
+
+<main>
+<div class="main-content">
+
+
+  <!-- ═══════════════ OVERVIEW ═══════════════ -->
+  <div class="section-block" id="section-overview">
+    <div class="section-label">OVERVIEW</div>
+    <h2>Section heading goes here</h2>
+    <p>Body text. Use <code>p</code> tags for paragraphs. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Zscaler uses a multi-tenant cloud architecture to enforce policy inline.</p>
+
+    <!-- Key concept box -->
+    <div class="key-concept">
+      <strong>Core idea:</strong> One sentence that captures the most important thing to remember about this section. Keep it to the exam-critical insight.
+    </div>
+
+    <!-- Definition block -->
+    <div class="definition">
+      <div class="definition-term">Term Name</div>
+      <div class="definition-body">What the term means, in plain language. One or two sentences maximum. Include the exam-relevant distinction if there is one.</div>
+    </div>
+
+    <!-- Content list -->
+    <ul class="content-list">
+      <li>First bullet point — use for enumerable facts</li>
+      <li>Second bullet point — keep each item scannable</li>
+      <li>Third bullet point — no trailing punctuation needed</li>
+    </ul>
+
+    <!-- Callout — Note (amber) -->
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>EXAM NOTE</div>
+      <div class="callout-body">Amber callout for exam notes, important distinctions, or "don't forget" reminders.</div>
+    </div>
+
+    <!-- Callout — Analogy (green) -->
+    <div class="callout callout-analogy">
+      <div class="callout-header"><div class="callout-icon">≈</div>ANALOGY</div>
+      <div class="callout-body">Green callout for analogies and mental models that help understanding.</div>
+    </div>
+
+    <!-- Callout — Tip (blue) -->
+    <div class="callout callout-tip">
+      <div class="callout-header"><div class="callout-icon">→</div>TIP</div>
+      <div class="callout-body">Blue callout for configuration tips, best practices, or "how to apply" guidance.</div>
+    </div>
+
+    <!-- Callout — Warning (red) -->
+    <div class="callout callout-warn">
+      <div class="callout-header"><div class="callout-icon">!</div>COMMON MISTAKE</div>
+      <div class="callout-body">Red callout for common exam traps, gotchas, or things people get wrong.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ TOPIC A ═══════════════ -->
+  <div class="section-block" id="section-topic-a">
+    <div class="section-label">TOPIC A · SUBTITLE</div>
+    <h2>Topic A heading</h2>
+    <p>Introductory paragraph for this topic.</p>
+
+    <h3>Sub-heading within topic</h3>
+    <p>Content under the sub-heading.</p>
+
+    <!-- Compare table -->
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Option A</th>
+          <th>Option B</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Row label 1</td>
+          <td>Value A1</td>
+          <td>Value B1</td>
+        </tr>
+        <tr>
+          <td>Row label 2</td>
+          <td>Value A2</td>
+          <td>Value B2</td>
+        </tr>
+        <tr>
+          <td>Row label 3</td>
+          <td>Value A3</td>
+          <td>Value B3</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pipeline box (monospace diagram) -->
+    <div class="pipeline-box">Step 1 → <span class="hl">Step 2</span> → Step 3 → <span class="dim">Step 4 (conditional)</span> → Step 5</div>
+
+    <!-- Numbered flow steps -->
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text"><strong>Step title</strong> — Description of what happens at this step. Keep to one or two sentences.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text"><strong>Step title</strong> — Description of what happens at this step.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text"><strong>Step title</strong> — Description of what happens at this step.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ TOPIC B ═══════════════ -->
+  <div class="section-block" id="section-topic-b">
+    <div class="section-label">TOPIC B · SUBTITLE</div>
+    <h2>Topic B heading</h2>
+    <p>Introductory paragraph for this topic.</p>
+
+    <!-- Pipeline stages (horizontal cards) -->
+    <div class="pipeline-stages">
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">01</div>
+        <div class="pipeline-stage-name">Stage Name</div>
+        <div class="pipeline-stage-desc">Brief description of this stage.</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">02</div>
+        <div class="pipeline-stage-name">Stage Name</div>
+        <div class="pipeline-stage-desc">Brief description of this stage.</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">03</div>
+        <div class="pipeline-stage-name">Stage Name</div>
+        <div class="pipeline-stage-desc">Brief description of this stage.</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">04</div>
+        <div class="pipeline-stage-name">Stage Name</div>
+        <div class="pipeline-stage-desc">Brief description of this stage.</div>
+      </div>
+    </div>
+
+    <!-- Scenario box (dark) -->
+    <div class="scenario">
+      <div class="scenario-label">SCENARIO — EXAM QUESTION STYLE</div>
+      <div class="scenario-q">Question stem: A customer wants to achieve X. What is the correct approach?</div>
+      <div class="scenario-a"><strong>Answer:</strong> The correct answer is Y because Z. The key distinguishing factor is the specific requirement for...</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ EXAM TIPS ═══════════════ -->
+  <div class="section-block" id="section-exam-tips">
+    <div class="section-label">EXAM TIPS</div>
+    <h2>What the exam focuses on</h2>
+    <p>One paragraph summarising the exam-critical concepts for this day's material.</p>
+
+    <ul class="content-list">
+      <li>Exam tip 1 — the most likely concept to appear</li>
+      <li>Exam tip 2 — common distractor to watch out for</li>
+      <li>Exam tip 3 — scenario-style question approach</li>
+    </ul>
+  </div>
+
+
+</div><!-- end .main-content -->
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sidebar">
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">TOPICS — TICK WHEN LOCKED IN</div>
+    <ul class="subtopic-list" id="subtopic-list">
+      <li onclick="toggleDone(this)"><div class="subtopic-check"></div><span>Topic A — key concept</span></li>
+      <li onclick="toggleDone(this)"><div class="subtopic-check"></div><span>Topic A — sub-concept</span></li>
+      <li onclick="toggleDone(this)"><div class="subtopic-check"></div><span>Topic B — key concept</span></li>
+      <li onclick="toggleDone(this)"><div class="subtopic-check"></div><span>Topic B — sub-concept</span></li>
+      <li onclick="toggleDone(this)"><div class="subtopic-check"></div><span>Exam tip 1</span></li>
+      <li onclick="toggleDone(this)"><div class="subtopic-check"></div><span>Exam tip 2</span></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">QUICK REFERENCE</div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">TERM ONE</div>
+      <div class="quick-ref-def">One-line definition that can be recalled instantly under exam pressure.</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">TERM TWO</div>
+      <div class="quick-ref-def">One-line definition. Keep to the exam-critical distinction only.</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">TERM THREE</div>
+      <div class="quick-ref-def">One-line definition. The format is: what it is, not how it works.</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">NOTE</div>
+    <div class="sidebar-note">Use this box for a single key reminder — a gotcha, a naming convention, or a formula that's easy to forget.</div>
+  </div>
+
+</div><!-- end .sidebar -->
+
+</main>
+
+<footer>
+  <div class="footer-left">NSE7<span>.</span></div>
+  <div class="footer-right">Day XX · Topic Title · Study Guide</div>
+</footer>
+
+<script>
+  /* ── NAV HUB ── */
+  /* Paste nav hub CSS inline per CLAUDE.md — cream/orange scheme */
+  (function() {
+    const style = document.createElement('style');
+    style.textContent = `
+      .nav-hub { position: relative; }
+      .nav-hub-trigger { background: var(--ink); color: var(--cream); padding: 16px 24px; border-radius: 16px; text-align: center; width: 200px; cursor: pointer; user-select: none; transition: transform 0.18s ease, box-shadow 0.18s ease; }
+      .nav-hub-trigger .icon { font-size: 32px; line-height: 1; color: var(--orange); }
+      .nav-hub-trigger .label { font-size: 11px; color: #7a6a55; letter-spacing: 0.1em; margin-top: 4px; }
+      .nav-hub-trigger .hint { font-size: 11px; color: var(--cream); margin-top: 6px; font-weight: 300; opacity: 0.6; }
+      .nav-hub:hover .nav-hub-trigger { transform: translateY(-4px) scale(1.03); box-shadow: 0 8px 24px rgba(26,18,9,0.18); border-radius: 16px 16px 0 0; }
+      .nav-hub-dropdown { position: absolute; top: 100%; right: 0; width: 200px; background: var(--ink); border-radius: 0 0 16px 16px; overflow: hidden; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity 0.2s ease, transform 0.2s ease; z-index: 100; border-top: 1px solid rgba(255,255,255,0.08); }
+      .nav-hub:hover .nav-hub-dropdown { opacity: 1; pointer-events: all; transform: translateY(0); }
+      .nav-hub-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; color: var(--cream); font-size: 12px; letter-spacing: 0.08em; font-weight: 500; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.15s; }
+      .nav-hub-item:last-child { border-bottom: none; }
+      .nav-hub-item:hover { background: rgba(255,107,53,0.15); color: var(--orange); }
+      .nav-hub-item .nav-icon { font-size: 18px; flex-shrink: 0; }
+    `;
+    document.head.appendChild(style);
+  })();
+
+  /* ── SMOOTH SCROLL NAV ── */
+  function navTo(sectionId, el) {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const top = section.getBoundingClientRect().top + window.scrollY - 60;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  /* ── SIDEBAR CHECKLIST ── */
+  function toggleDone(li) {
+    li.classList.toggle('done');
+    li.querySelector('.subtopic-check').style.background = li.classList.contains('done') ? 'var(--green)' : '';
+    li.querySelector('.subtopic-check').style.borderColor = li.classList.contains('done') ? 'var(--green)' : '';
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const items = document.querySelectorAll('#subtopic-list li');
+    const done  = document.querySelectorAll('#subtopic-list li.done').length;
+    const pct   = items.length ? Math.round(done / items.length * 100) : 0;
+    const el    = document.getElementById('prog-num');
+    if (el) el.innerHTML = pct + '<span style="font-size:18px;color:#7a6a55;">%</span>';
+  }
+
+  /* ── ACTIVE NAV TAB ON SCROLL ── */
+  window.addEventListener('scroll', () => {
+    const sections = ['section-overview', 'section-topic-a', 'section-topic-b', 'section-exam-tips'];
+    const tabs   = document.querySelectorAll('.nav-tab');
+    const offset = document.querySelector('.section-nav').offsetHeight + 32;
+    let active = 0;
+    sections.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < offset + 40) active = i;
+    });
+    tabs.forEach((t, i) => t.classList.toggle('active', i === active));
+  });
+</script>
+
+</body>
+</html>

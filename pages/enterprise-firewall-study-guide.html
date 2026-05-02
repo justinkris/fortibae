@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — Administrator Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  .section-nav { flex-wrap: wrap; padding: 0 40px; }
+  .nav-tab { padding: 12px 16px; font-size: 11px; }
+  .lesson-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--orange); color: white;
+    padding: 2px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+    margin-right: 6px; vertical-align: middle;
+  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .info-card { background: var(--cream); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .info-card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: var(--orange); margin-bottom: 8px; }
+  .info-card-body { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="breadcrumb">
+      <a href="../index.html">NSE7</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>Enterprise Firewall 7.6</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Study Guide</span>
+    </div>
+    <div class="day-badge">
+      <span class="day-badge-dot"></span>
+      FORTIOS 7.6 · 10 LESSONS
+    </div>
+    <h1>Enterprise <em>Firewall</em> Administrator</h1>
+    <div class="header-meta-row">
+      <span class="tag tag-zia">FortiGate</span>
+      <span class="tag tag-zpa">FortiManager</span>
+      <span class="tag tag-arch">Architecture</span>
+      <span class="tag tag-weight">High Weight</span>
+    </div>
+  </div>
+</header>
+
+<nav class="section-nav">
+  <button class="nav-tab active" onclick="navTo('section-overview', this)">Overview</button>
+  <button class="nav-tab" onclick="navTo('section-l1', this)">L1 · Network Arch</button>
+  <button class="nav-tab" onclick="navTo('section-l2', this)">L2 · Central Mgmt</button>
+  <button class="nav-tab" onclick="navTo('section-l3', this)">L3 · VLANs &amp; VDOMs</button>
+  <button class="nav-tab" onclick="navTo('section-l4', this)">L4 · High Availability</button>
+  <button class="nav-tab" onclick="navTo('section-l5', this)">L5 · Dynamic Routing</button>
+  <button class="nav-tab" onclick="navTo('section-l6', this)">L6 · Security Profiles</button>
+  <button class="nav-tab" onclick="navTo('section-l7', this)">L7 · IPsec</button>
+  <button class="nav-tab" onclick="navTo('section-l8', this)">L8 · ADVPN</button>
+  <button class="nav-tab" onclick="navTo('section-l9', this)">L9 · Security Fabric</button>
+  <button class="nav-tab" onclick="navTo('section-l10', this)">L10 · HW Acceleration</button>
+  <button class="nav-tab" onclick="navTo('section-exam-tips', this)">Exam Tips</button>
+</nav>
+
+<main>
+<div class="main-content">
+
+
+  <!-- ═══════════════ OVERVIEW ═══════════════ -->
+  <div class="section-block" id="section-overview">
+    <div class="section-label">OVERVIEW</div>
+    <h2>Enterprise Firewall 7.6 — What This Guide Covers</h2>
+    <p>This study guide covers all 10 lessons of the Fortinet Enterprise Firewall Administrator course for FortiOS 7.6. Each lesson maps to a core exam domain. Use the tabs above to jump between lessons and tick off topics in the sidebar as you lock them in.</p>
+
+    <div class="key-concept">
+      <strong>Core theme:</strong> FortiGate is a next-generation firewall (NGFW) managed at scale via FortiManager, segmented with VLANs/VDOMs, made resilient with HA, accelerated with dedicated SPU hardware, and secured end-to-end through the Fortinet Security Fabric.
+    </div>
+
+    <!-- Course at a glance -->
+    <div class="pipeline-stages">
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">01</div>
+        <div class="pipeline-stage-name">Network Arch</div>
+        <div class="pipeline-stage-desc">DCFW, ISFW, DEFW, Cloud — use case positioning</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">02</div>
+        <div class="pipeline-stage-name">Central Mgmt</div>
+        <div class="pipeline-stage-desc">FortiManager ADOMs, dynamic objects, scripts</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">03</div>
+        <div class="pipeline-stage-name">VLANs &amp; VDOMs</div>
+        <div class="pipeline-stage-desc">Segmentation — trunk, VXLAN, inter-VDOM routing</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">04</div>
+        <div class="pipeline-stage-name">High Availability</div>
+        <div class="pipeline-stage-desc">FGCP, FGSP, VRRP — modes and election</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">05</div>
+        <div class="pipeline-stage-name">Dynamic Routing</div>
+        <div class="pipeline-stage-desc">OSPF areas, BGP ECMP, FortiManager BGP</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">06</div>
+        <div class="pipeline-stage-name">Security Profiles</div>
+        <div class="pipeline-stage-desc">SSL/TLS inspection, web filter, IPS, UTM</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">07</div>
+        <div class="pipeline-stage-name">IPsec</div>
+        <div class="pipeline-stage-desc">Topology design, IKEv2, DH groups, DPD</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">08</div>
+        <div class="pipeline-stage-name">ADVPN</div>
+        <div class="pipeline-stage-desc">Auto-Discovery VPN — dynamic spoke-to-spoke</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">09</div>
+        <div class="pipeline-stage-name">Security Fabric</div>
+        <div class="pipeline-stage-desc">Connectors, use cases, automation stitches</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">10</div>
+        <div class="pipeline-stage-name">HW Acceleration</div>
+        <div class="pipeline-stage-desc">NP6/NP7, CP, SP5 — offload architecture</div>
+      </div>
+    </div>
+
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>EXAM NOTE</div>
+      <div class="callout-body">The exam heavily tests scenario-based questions: given a customer requirement (e.g., "needs layer 2 UTM without changing IP addressing"), you must identify the correct FortiGate mode or feature. Always map requirements to the matching product/mode first.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 1 ═══════════════ -->
+  <div class="section-block" id="section-l1">
+    <div class="section-label">LESSON 1 · INTRODUCTION TO NETWORK SECURITY ARCHITECTURE</div>
+    <h2>Enterprise Firewall Solution &amp; Fortinet Use Cases</h2>
+    <p>The traditional perimeter-only approach is obsolete. Modern threats (zero-day, APT, polymorphic malware, insider threats) require a zero-trust strategy with deep inspection at every network layer. Fortinet's NGFW extends traditional L3/L4 ACLs with application-layer awareness and UTM profiles.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> Know which FortiGate series maps to which deployment role — this drives product selection questions on the exam.
+    </div>
+
+    <h3>FortiGate Product Families</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Series</th><th>Role</th><th>Acronym</th><th>Key Feature</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>30–90 Series</td><td>Branch / Remote Site</td><td>DEFW</td><td>All-in-one, basic firewall + IPsec VPN</td></tr>
+        <tr><td>100–900 Series</td><td>Campus / Internal Segmentation</td><td>ISFW</td><td>VLANs, VDOMs, integrated W/LAN</td></tr>
+        <tr><td>1000–7000 Series</td><td>Data Center</td><td>DCFW</td><td>Hyperscale, HW SSL inspection, low latency</td></tr>
+        <tr><td>FortiGate VM / FortiCNF / FortiSASE</td><td>Cloud / Virtual</td><td>FWaaS</td><td>Multicloud, Secure SD-WAN, SaaS</td></tr>
+      </tbody>
+    </table>
+
+    <h3>The Five Use Cases</h3>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text"><strong>DCFW — Data Center Firewall</strong> — NGFW + segmentation (VRFs, VDOMs) + HW SSL inspection + hyperscale. Physical switches unified as one logical unit. Traffic: 10 Gbps–1 Tbps.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text"><strong>ISFW — Internal Segmentation Firewall</strong> — VLANs, VDOMs, micro-segmentation, integrated W/LAN (FortiAP). Campus environment. Focus on east-west traffic inspection.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text"><strong>Cloud Firewalls</strong> — FortiGate VM, FortiCNF, FortiSASE. IPsec + SSL + L2TP VPNs, Secure SD-WAN, multicloud (AWS, Azure, GCP, VMware, etc.). SaaS-delivered via FortiSASE.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-text"><strong>Distributed NGFW</strong> — Multiple NGFWs across HQ + campus + branches. Adds 5G/LTE (FortiExtender), ZTNA (FortiGate + FortiClient + FortiAuthenticator), DDoS protection, Secure SD-WAN.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-text"><strong>DEFW — Distributed Enterprise Firewall</strong> — Branch-only. Basic firewall + IPsec VPN back to HQ. Not designed for deep UTM. Use 100-series if branch needs more inspection.</div>
+      </div>
+    </div>
+
+    <div class="definition">
+      <div class="definition-term">FortiManager</div>
+      <div class="definition-body">Single, unified management console for all FortiGate devices across all deployment types (branch, campus, DC, cloud). Centrally manages policies, objects, firmware, and configuration.</div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-header"><div class="callout-icon">!</div>COMMON MISTAKE</div>
+      <div class="callout-body">DEFW (30–90 series) is NOT designed for deep security analysis. If a branch requires IPS or SSL inspection, you need at least a 100-series ISFW model. Don't confuse DEFW capabilities with ISFW.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 2 ═══════════════ -->
+  <div class="section-block" id="section-l2">
+    <div class="section-label">LESSON 2 · CENTRAL MANAGEMENT</div>
+    <h2>FortiManager — Architecture, Dynamic Objects &amp; Scripts</h2>
+    <p>FortiManager centralizes policy management using a two-layer architecture: the <strong>device layer</strong> (per-device configuration) and the <strong>policy layer</strong> (policy packages shared across devices). Understanding which operations touch which layer is a core exam concept.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> Every FortiManager operation either reads from or writes to the device layer, the policy layer, or both. Know which is which before the exam.
+    </div>
+
+    <h3>ADOM Architecture</h3>
+    <div class="definition">
+      <div class="definition-term">ADOM (Administrative Domain)</div>
+      <div class="definition-body">Virtual management instances on FortiManager. Without ADOMs enabled, everything lives in the default <code>root</code> ADOM. With ADOMs, each can run a different FortiOS firmware version (supporting same version and 2 versions back — e.g., 7.6 global supports 7.4 and 7.2).</div>
+    </div>
+    <ul class="content-list">
+      <li><strong>Global Database</strong> — stores objects and policies applied across multiple ADOMs. All global objects use the reserved <code>g-</code> prefix.</li>
+      <li><strong>Device layer</strong> — per-device configuration (interfaces, system settings). Provisioning templates, Fabric View, Extender Manager live here.</li>
+      <li><strong>Policy layer</strong> — policy packages. VPN Manager, AP Manager, FortiSwitch Manager live here.</li>
+      <li><strong>FortiGuard ADOM</strong> — single FortiGuard database serves all ADOMs regardless of version.</li>
+    </ul>
+
+    <h3>Key Operations — Device Layer vs Policy Layer</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Operation</th><th>Touches</th><th>Pushes to FortiGate?</th><th>Updates Policy Package?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Retrieve</td><td>Device layer only</td><td>No (pulls FROM FortiGate)</td><td>No</td></tr>
+        <tr><td>Auto-retrieve</td><td>Device layer only</td><td>No (triggered on add)</td><td>No (import required)</td></tr>
+        <tr><td>Install device settings (only)</td><td>Device layer → FortiGate</td><td>Yes (with preview)</td><td>No</td></tr>
+        <tr><td>Quick install</td><td>Device layer → FortiGate</td><td>Yes (no preview)</td><td>No</td></tr>
+        <tr><td>Import</td><td>Policy layer</td><td>No</td><td>Yes (from revision)</td></tr>
+        <tr><td>Revert</td><td>Device layer revision</td><td>No (import then install)</td><td>No</td></tr>
+        <tr><td>Install policy package</td><td>Policy layer → Device → FortiGate</td><td>Yes (wizard + preview)</td><td>Already there</td></tr>
+        <tr><td>Reinstall policy</td><td>Policy layer → Device → FortiGate</td><td>Yes (no wizard)</td><td>Already there</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Dynamic Objects &amp; Normalized Interfaces</h3>
+    <p>Normalized interfaces allow the same policy layer interface name (e.g., <code>LAN</code>) to map to different physical ports on different FortiGate devices without rewriting policies.</p>
+    <ul class="content-list">
+      <li><strong>Per-platform mapping</strong> — applies uniform settings to all devices of the same model type</li>
+      <li><strong>Per-device mapping</strong> — customized for individual devices (e.g., LAN → port2 on FortiGate-A, LAN → port4 on FortiGate-B)</li>
+      <li><strong>Dynamic object mapping</strong> — firewall address objects can have per-device IP ranges (e.g., LAN = 172.16.0.0/24 for Branch1, 192.168.0.0/24 for Branch2)</li>
+      <li><strong>Metadata variables</strong> — use <code>$variable_name</code> syntax; shown with magnifying glass icon in GUI; supports per-device mapping</li>
+      <li>Not all objects support per-device mapping (e.g., web filter profiles do not)</li>
+    </ul>
+
+    <h3>Scripts — Four Use Cases</h3>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text"><strong>Remote FortiGate Directly (via CLI)</strong> — Script runs directly on FortiGate, then FortiManager auto-retrieves to sync the device database. Config Status shows Synchronized.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text"><strong>Device Database</strong> — Script modifies the device layer only; status changes to Modified. You must then install device settings to push to FortiGate.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text"><strong>Policy Package / ADOM Database</strong> — Script creates objects in the policy layer; flags the policy package as Modified. Install the policy package to push changes.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-text"><strong>CLI Templates (Overwrite)</strong> — Overwrites both device and policy layer configurations. Metadata variables allow dynamic values per device. Marks both statuses as Modified.</div>
+      </div>
+    </div>
+
+    <h3>ZTP and LTP</h3>
+    <ul class="content-list">
+      <li><strong>ZTP (Zero-Touch Provisioning)</strong> — FortiGate auto-connects to FortiManager over WAN/internet with no preconfiguration</li>
+      <li><strong>LTP (Low-Touch Provisioning)</strong> — minimal pre-configuration needed before FortiGate can find FortiManager</li>
+      <li><strong>Model device</strong> — placeholder created before real device arrives; matched by serial number or pre-shared key; auto-links when real device connects</li>
+      <li><strong>Pre-run CLI templates</strong> — one-time only; auto-detach after quick install; ideal for initial bootstrap tasks</li>
+      <li><strong>CLI templates</strong> — persistent; remain assigned after install; use for ongoing configurations</li>
+    </ul>
+
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>EXAM NOTE</div>
+      <div class="callout-body">Quick install bypasses the installation preview. Reinstall policy bypasses the wizard. Both are "fast path" options — remember which one applies to device settings vs. policy packages.</div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-header"><div class="callout-icon">!</div>COMMON MISTAKE</div>
+      <div class="callout-body">Retrieve and Auto-retrieve do NOT update the policy package — they only capture changes into the device layer revision history. You must run Import afterward to move changes into the policy package.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 3 ═══════════════ -->
+  <div class="section-block" id="section-l3">
+    <div class="section-label">LESSON 3 · VLANs AND VDOMs</div>
+    <h2>Network Segmentation with VLANs and Virtual Domains</h2>
+    <p>VLANs create logical broadcast domain separation over shared physical infrastructure. VDOMs partition a single FortiGate into multiple independent virtual firewalls, each with its own policies, routing, and security profiles.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> VLANs segment at L2; VDOMs segment at L3 (firewall level). Inter-VDOM links are virtual cables between VDOMs — no physical interface needed.
+    </div>
+
+    <h3>VLAN Standards at a Glance</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Standard</th><th>EtherType</th><th>Max VLANs</th><th>Use Case</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>802.1Q</td><td>0x8100</td><td>4,096</td><td>Standard VLAN tagging on trunks</td></tr>
+        <tr><td>802.1ad (Q-in-Q)</td><td>0x88A8</td><td>16 million</td><td>Service provider double-tagging</td></tr>
+        <tr><td>VXLAN</td><td>UDP port 4789</td><td>16 million</td><td>Data center / cloud overlay networking</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-tip">
+      <div class="callout-header"><div class="callout-icon">→</div>TIP</div>
+      <div class="callout-body">FortiGate does NOT add VLAN tags on ingress — the upstream switch does. FortiGate only adds/modifies/removes VLAN tags on egress (after routing decision). L2 devices add/remove; L3 devices modify.</div>
+    </div>
+
+    <h3>Switch Interface Types</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Type</th><th>CLI Command</th><th>STP Support</th><th>Wireless SSIDs</th><th>Intraswitch Block</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Hardware switch</td><td><code>config system virtual-switch</code></td><td>Yes</td><td>No</td><td>No</td></tr>
+        <tr><td>Software switch</td><td><code>config system switch-interface</code></td><td>No</td><td>Yes</td><td>Yes (explicit)</td></tr>
+        <tr><td>Aggregate (LACP)</td><td><code>802.3ad</code></td><td>—</td><td>No</td><td>—</td></tr>
+        <tr><td>FortiLink (MCLAG)</td><td>WiFi &amp; Switch Controller</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <h3>VDOM Types</h3>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text"><strong>Admin VDOM</strong> — management only; handles FortiGuard updates; NO Policy &amp; Objects, Security Profiles, VPN, or User &amp; Authentication modules. Use for management isolation (DCFW, ISFW).</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text"><strong>Traffic VDOM — NAT mode</strong> — standard firewall operation; interfaces have IP addresses; most common VDOM type. Default root VDOM is the management VDOM (can be changed).</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text"><strong>Traffic VDOM — Transparent mode</strong> — L2 insertion point; NO IP addresses on interfaces (only a management IP); uses <code>forward-domain</code> to subdivide broadcast domains when more than 2 VLANs are present.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-text"><strong>LAN Extension VDOM</strong> — connects FortiGate/FortiExtender (connector) to a FortiGate access controller via VXLAN/IPsec. Only Network and VPN modules available.</div>
+      </div>
+    </div>
+
+    <h3>Key VDOM Facts</h3>
+    <ul class="content-list">
+      <li>Default: 10 VDOMs per FortiGate (additional VDOMs require license)</li>
+      <li>Enable multi-VDOM: <code>config system global → set vdom-mode multi-vdom</code></li>
+      <li>Check VDOM limit: <code>get system status | grep "Max number of virtual domains"</code></li>
+      <li>Enabling VDOMs creates VDOM Global and root VDOM — neither can be deleted</li>
+      <li>VDOM Global affects the entire device (interfaces, firmware, DNS); only top-level admins should modify it</li>
+      <li>Inter-VDOM link names auto-append 0 and 1 (e.g., <code>VDOM_Link0</code> in root, <code>VDOM_Link1</code> in VDOM1)</li>
+      <li>Global objects use the <code>g-</code> prefix — consistent UTM across all VDOMs; modifying one updates all</li>
+    </ul>
+
+    <div class="callout callout-warn">
+      <div class="callout-header"><div class="callout-icon">!</div>COMMON MISTAKE</div>
+      <div class="callout-body">802.1ad (double-tagging) is NOT the same as 802.3ad (LACP / link aggregation). The exam may present both — 802.1ad = Q-in-Q for VLANs; 802.3ad = bonding for bandwidth + redundancy.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 4 ═══════════════ -->
+  <div class="section-block" id="section-l4">
+    <div class="section-label">LESSON 4 · HIGH AVAILABILITY</div>
+    <h2>FGCP, FGSP, and VRRP — FortiGate HA Protocols</h2>
+    <p>High availability prevents single points of failure. FortiGate supports three HA approaches: FGCP (proprietary Fortinet clustering), FGSP (session sync without a single cluster), and VRRP (industry-standard gateway redundancy). Knowing when to use each is the exam focus.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> FGCP is the go-to Fortinet HA. FGSP keeps sessions alive across independent FortiGates. VRRP provides default gateway redundancy. They solve different problems.
+    </div>
+
+    <h3>FGCP — FortiGate Clustering Protocol</h3>
+    <ul class="content-list">
+      <li><strong>Active-Passive (A-P)</strong> — one primary handles all traffic; secondary is on hot standby. Failover is fast but secondary is idle.</li>
+      <li><strong>Active-Active (A-A)</strong> — primary distributes sessions to secondary via load balancing. Both devices process traffic.</li>
+      <li>All cluster members must share: same model, same firmware, same license level, same hard drive config, same operating mode (management VDOM)</li>
+      <li>HA group ID, group name, password, and heartbeat interfaces must match across all members</li>
+      <li>Best practice: use at least two heartbeat interfaces (different physical ports); initially convert DHCP/PPPoE interfaces to static</li>
+    </ul>
+
+    <h3>Primary Election (Override Disabled — Default)</h3>
+    <div class="pipeline-box">Override DISABLED (default):
+1. Most monitored ports up  →  wins
+2. Higher HA uptime          →  wins  (force failover: # diagnose sys ha reset-uptime)
+3. Higher priority           →  wins
+4. Higher serial number      →  wins</div>
+
+    <h3>Primary Election (Override Enabled)</h3>
+    <div class="pipeline-box">Override ENABLED (config system ha → set override enable):
+1. Most monitored ports up  →  wins
+2. Higher priority           →  wins  ← priority checked BEFORE uptime
+3. Higher HA uptime          →  wins
+4. Higher serial number      →  wins
+
+Force failover: change the primary's HA priority value</div>
+
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>EXAM NOTE</div>
+      <div class="callout-body">Override disabled = uptime matters more than priority. Override enabled = priority matters most (allows you to designate a "preferred primary" that always wins when healthy). Override is CLI-only — no GUI setting.</div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-header"><div class="callout-icon">!</div>COMMON MISTAKE</div>
+      <div class="callout-body">If cluster members have different licenses, the cluster uses the lowest-level license. This can silently reduce capability — always match licenses across all cluster members.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 5 ═══════════════ -->
+  <div class="section-block" id="section-l5">
+    <div class="section-label">LESSON 5 · DYNAMIC ROUTING PROTOCOLS</div>
+    <h2>OSPF Features &amp; BGP in Enterprise Networks</h2>
+    <p>FortiGate supports full dynamic routing including OSPF (link-state, intra-AS) and BGP (path-vector, inter-AS). Both are used in enterprise data center and WAN deployments. The exam tests OSPF area design and BGP convergence optimization.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> OSPF = internal routing within areas (Dijkstra's SPF). BGP = routing between autonomous systems and across the internet. Both support redistribution, ECMP, and route filtering on FortiGate.
+    </div>
+
+    <h3>OSPF — Key Concepts</h3>
+    <div class="definition">
+      <div class="definition-term">Link-State Protocol</div>
+      <div class="definition-body">Each OSPF router maintains an identical LSDB describing the full topology. Dijkstra's algorithm builds a shortest-path tree. Updates only sent on topology change (periodic refresh every 30 minutes otherwise).</div>
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>Router Type</th><th>Definition</th><th>Key Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Backbone Router</td><td>Has at least one interface in Area 0</td><td>Core routing</td></tr>
+        <tr><td>ABR (Area Border Router)</td><td>Connects non-backbone areas to Area 0</td><td>Route summarization via <code>config range</code></td></tr>
+        <tr><td>ASBR (Autonomous System Boundary Router)</td><td>Redistributes external routing protocols into OSPF</td><td>Controls external route injection</td></tr>
+      </tbody>
+    </table>
+
+    <ul class="content-list">
+      <li>All OSPF networks must have at least one backbone area (Area 0)</li>
+      <li>External routes (E1/E2) not load-balanced by default — enable ECMP with <code>set rfc1583-compatible enable</code></li>
+      <li>OSPF redistribution: <code>config router ospf → config redistribute [connected|static|bgp|rip|isis]</code> (all disabled by default)</li>
+    </ul>
+
+    <h3>BGP — Key Concepts</h3>
+    <ul class="content-list">
+      <li><strong>IBGP</strong> — BGP within the same Autonomous System (AS)</li>
+      <li><strong>EBGP</strong> — BGP between different ASes (internet routing)</li>
+      <li>By default, FortiGate BGP does NOT advertise prefixes — must configure redistribution explicitly</li>
+      <li><strong>ECMP with BGP</strong> — enable <code>set ebgp-multipath enable</code> or <code>set ibgp-multipath enable</code> for load balancing</li>
+      <li><strong>Loopback as BGP source</strong> — loopback stays up even if a physical interface fails; use <code>set update-source &lt;loopback&gt;</code> + <code>set ebgp-enforce-multihop enable</code> (required since loopback is not the direct next-hop)</li>
+    </ul>
+
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>EXAM NOTE</div>
+      <div class="callout-body">OSPF ECMP for external routes requires <code>rfc1583-compatible enable</code>. BGP multipath requires <code>ebgp-multipath enable</code>. These are separate settings — don't mix them up on the exam.</div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-header"><div class="callout-icon">→</div>TIP</div>
+      <div class="callout-body">Using a loopback as the BGP source interface requires multihop to be enabled because the loopback IP is not directly connected to the BGP peer — it's reachable only via the physical interface. FortiGate needs to know to look up the route to get there.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 6 ═══════════════ -->
+  <div class="section-block" id="section-l6">
+    <div class="section-label">LESSON 6 · SECURITY PROFILES</div>
+    <h2>SSL/SSH Inspection, Web Filter, Application Control, IPS &amp; UTM</h2>
+    <p>Security profiles apply deep packet inspection to network traffic. SSL/TLS inspection decrypts and re-encrypts HTTPS traffic so other profiles (IPS, web filter, antivirus) can analyze the plaintext payload.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> Without SSL inspection, FortiGate can't see inside encrypted traffic. Everything else (web filter, IPS, AV) is blind to HTTPS without it.
+    </div>
+
+    <h3>TLS Version Reference</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Version</th><th>Status</th><th>Published</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>SSL 2.0 / 3.0</td><td>Deprecated</td><td>1995–1996</td><td>Never use</td></tr>
+        <tr><td>TLS 1.0 / 1.1</td><td>Deprecated</td><td>1999–2006</td><td>Disabled on modern systems</td></tr>
+        <tr><td>TLS 1.2</td><td>Current</td><td>2008 (RFC 5246)</td><td>Widely deployed, supported</td></tr>
+        <tr><td>TLS 1.3</td><td>Preferred</td><td>2018 (RFC 8446)</td><td>Faster handshake, better cipher suites</td></tr>
+      </tbody>
+    </table>
+
+    <ul class="content-list">
+      <li>Admin HTTPS TLS: <code>config system global → set admin-https-ssl-versions tlsv1-2 tlsv1-3</code></li>
+      <li>TLS cipher suite format: <code>TLS_[KeyExchange]_[Auth]_WITH_[Encryption]_[Hash]</code></li>
+      <li>HTTP/3 uses QUIC (UDP) instead of TCP; TLS 1.3 is mandatory (not optional)</li>
+    </ul>
+
+    <h3>Web Filter vs Application Control vs ISDB</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Feature</th><th>OSI Layer</th><th>Inspection</th><th>Used In</th><th>FortiGuard Needed</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Web Filter</td><td>L7 (URLs / domains)</td><td>Flow or Proxy</td><td>Security profile → internet policy</td><td>Yes (FortiGuard category ratings)</td></tr>
+        <tr><td>Application Control</td><td>L7 (app signatures)</td><td>Flow-based</td><td>Security profile → internet policy</td><td>Yes (application definitions)</td></tr>
+        <tr><td>ISDB</td><td>L3 + L4 (IP + port)</td><td>No deep inspection</td><td>Policy &amp; Objects, SD-WAN rules</td><td>Yes (internet service DB)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="definition">
+      <div class="definition-term">ISDB (Internet Service Database)</div>
+      <div class="definition-body">A database of known IP ranges and port patterns for major internet services (Google, Microsoft, Zoom, etc.). Works at L3/L4 only — no payload inspection. Used in policies and SD-WAN rules when you want to steer or block traffic by service identity rather than URL.</div>
+    </div>
+
+    <h3>IPS — Intrusion Prevention System</h3>
+    <ul class="content-list">
+      <li>IPS profiles use <strong>filters</strong> (by severity, protocol, OS, target) or <strong>signatures</strong> (specific CVEs)</li>
+      <li>Targets: <strong>Server</strong> (protect servers from client attacks) and/or <strong>Client</strong> (protect clients from server-delivered exploits)</li>
+      <li>Enabling both targets + all severities + Block action = maximum protection but highest false-positive risk</li>
+      <li>Validate IPS with <code>hping3</code> — open-source ethical attack simulator for crafting custom TCP/IP packets</li>
+    </ul>
+
+    <div class="callout callout-warn">
+      <div class="callout-header"><div class="callout-icon">!</div>COMMON MISTAKE</div>
+      <div class="callout-body">Web filter and application control both require FortiGuard licenses and depend on FortiGuard lookups. ISDB also requires FortiGuard. Without an active FortiGuard subscription, all three features degrade or stop working.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 7 ═══════════════ -->
+  <div class="section-block" id="section-l7">
+    <div class="section-label">LESSON 7 · IPsec</div>
+    <h2>IPsec Topology Design &amp; FortiManager IPsec Templates</h2>
+    <p>IPsec provides encrypted, authenticated tunnels between FortiGate devices. Topology selection (site-to-site, hub-and-spoke, full mesh, ADVPN) determines scalability, latency, and management complexity.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> Choose IKEv2 for all new deployments — it's faster, more secure, and supports EAP authentication. Hub-and-spoke scales easily but introduces hub bottlenecks; ADVPN solves this by dynamically creating spoke-to-spoke tunnels.
+    </div>
+
+    <h3>IPsec Topology Options</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Topology</th><th>Best For</th><th>Tunnels Needed</th><th>Scalability</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Site-to-Site</td><td>Two fixed locations</td><td>1</td><td>Low</td></tr>
+        <tr><td>Hub-and-Spoke</td><td>Many branches to one HQ</td><td>N (one per spoke)</td><td>Good — simple management</td></tr>
+        <tr><td>Dual Hub-and-Spoke</td><td>Hub redundancy</td><td>2N</td><td>Good — resilient</td></tr>
+        <tr><td>Full Mesh</td><td>Low-latency any-to-any</td><td>N(N-1)/2</td><td>Poor — complex at scale</td></tr>
+        <tr><td>ADVPN</td><td>Dynamic spoke-to-spoke</td><td>N + dynamic shortcuts</td><td>Excellent — best of both</td></tr>
+      </tbody>
+    </table>
+
+    <h3>IKEv1 vs IKEv2</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Feature</th><th>IKEv1</th><th>IKEv2</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Encryption</td><td>DES, 3DES, AES-CBC</td><td>AES-GCM, ChaCha20P</td></tr>
+        <tr><td>Authentication</td><td>PSK, Digital Signatures</td><td>EAP, PSK, Digital Signatures</td></tr>
+        <tr><td>Integrity</td><td>HMAC-MD5, HMAC-SHA1</td><td>HMAC-SHA2, AES-XCBC</td></tr>
+        <tr><td>DH Groups</td><td>Groups 1, 2, 5 (weak)</td><td>Groups 14–20 (strong, includes ECP)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>DH Groups — MODP vs ECP</h3>
+    <ul class="content-list">
+      <li><strong>MODP (Modular Exponential)</strong> — Groups 1, 2, 5, 14–18. Strength increases with key length. Group 14 (2048-bit) is the minimum recommended.</li>
+      <li><strong>ECP (Elliptic Curve)</strong> — Groups 19 (256-bit), 20 (384-bit). Shorter keys, equivalent or better security. Preferred for modern deployments.</li>
+      <li><strong>PFS (Perfect Forward Secrecy)</strong> — enabled in Phase 2 with a DH group. Ensures compromise of one session does not compromise past sessions.</li>
+    </ul>
+
+    <h3>DPD — Dead Peer Detection</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>DPD Mode</th><th>When to Use</th><th>Behavior</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>On-demand</td><td>Unpredictable/bursty traffic</td><td>Sends DPD only when traffic needs to flow but no response received</td></tr>
+        <tr><td>On-idle</td><td>Regular, periodic traffic patterns</td><td>Proactively sends DPD during idle periods to verify peer</td></tr>
+        <tr><td>Disabled</td><td>Stable networks with alternate monitoring</td><td>Only replies to DPDs initiated by the peer; never initiates</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>EXAM NOTE</div>
+      <div class="callout-body">DH Groups 1, 2, and 5 are considered weak and should never be used in new deployments. The exam may present a scenario asking you to identify the most secure configuration — always prefer ECP (Group 19/20) or MODP Group 14+ for IKEv2.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 8 ═══════════════ -->
+  <div class="section-block" id="section-l8">
+    <div class="section-label">LESSON 8 · AUTO-DISCOVERY VPN</div>
+    <h2>ADVPN — Dynamic Spoke-to-Spoke Tunnels</h2>
+    <p>ADVPN combines the management simplicity of hub-and-spoke with the performance of full-mesh. The hub acts as a broker: when Spoke A needs to reach Spoke B, the hub redirects them to negotiate a direct IPsec shortcut tunnel, eliminating hub-transit latency.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> ADVPN dynamically creates on-demand IPsec shortcuts between spokes. The hub still manages connectivity but traffic flows directly between spokes once the shortcut is established.
+    </div>
+
+    <h3>ADVPN vs Traditional Topologies</h3>
+    <div class="pipeline-stages">
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">Hub-Spoke</div>
+        <div class="pipeline-stage-name">Simple Management</div>
+        <div class="pipeline-stage-desc">All spoke traffic transits hub. Hub becomes bottleneck as spokes scale.</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">Full Mesh</div>
+        <div class="pipeline-stage-name">Best Performance</div>
+        <div class="pipeline-stage-desc">Direct paths everywhere but N(N-1)/2 tunnels — unmanageable at scale.</div>
+      </div>
+      <div class="pipeline-stage">
+        <div class="pipeline-stage-num">ADVPN</div>
+        <div class="pipeline-stage-name">Best of Both</div>
+        <div class="pipeline-stage-desc">Hub-based setup + automatic spoke-to-spoke shortcuts on demand.</div>
+      </div>
+    </div>
+
+    <h3>ADVPN Configuration — Key Settings</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Setting</th><th>Hub Phase 1</th><th>Spoke Phase 1</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>IKE version</td><td><code>set ike-version 2</code></td><td><code>set ike-version 2</code></td></tr>
+        <tr><td>Tunnel type</td><td><code>set type dynamic</code></td><td>Default (static to hub)</td></tr>
+        <tr><td>ADVPN sender</td><td><code>set auto-discovery-sender enable</code></td><td>—</td></tr>
+        <tr><td>ADVPN receiver</td><td>—</td><td><code>set auto-discovery-receiver enable</code></td></tr>
+        <tr><td>Route learning</td><td><code>set add-route disable</code> (use dynamic routing)</td><td><code>set net-device enable</code></td></tr>
+      </tbody>
+    </table>
+
+    <ul class="content-list">
+      <li>ADVPN requires IKEv2</li>
+      <li>Dynamic routing (BGP or OSPF over the VPN) is used on the hub to learn spoke subnets — static routes are not scalable</li>
+      <li>Spoke-to-spoke shortcut tunnels are created automatically when the hub redirects spoke traffic</li>
+      <li><strong>FortiManager IPsec templates</strong> simplify ADVPN setup — activate hub or branch template, enable ADVPN option, configure metadata variables for tunnel IPs</li>
+    </ul>
+
+    <div class="callout callout-tip">
+      <div class="callout-header"><div class="callout-icon">→</div>TIP</div>
+      <div class="callout-body">ADVPN phase 1 on the hub uses <code>type dynamic</code> so it can accept connections from any spoke without pre-configuring each one. Spokes connect to the hub's static IP but then shortcut directly to each other.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 9 ═══════════════ -->
+  <div class="section-block" id="section-l9">
+    <div class="section-label">LESSON 9 · SECURITY FABRIC</div>
+    <h2>Fabric Connectors, External Connectors &amp; Automation Stitches</h2>
+    <p>The Fortinet Security Fabric is a cybersecurity mesh platform built on FortiOS. It integrates Fortinet products and third-party solutions to share intelligence, automate responses, and enforce consistent policy across the entire attack surface.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> Security Fabric = Broad (visibility everywhere) + Integrated (all products communicate) + Automated (faster response without human intervention). Fabric Connectors are for Fortinet-native integration; External Connectors are for third-party cloud/SDN/endpoint systems.
+    </div>
+
+    <h3>Fabric Connectors vs External Connectors</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Feature</th><th>Fabric Connectors</th><th>External Connectors</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Location in GUI</td><td>Security Fabric → Fabric Connectors</td><td>Security Fabric → External Connectors</td></tr>
+        <tr><td>Examples</td><td>FortiGate, FortiAnalyzer, FortiClient EMS, FortiManager, FortiSandbox</td><td>AWS, GCP, Azure, Kubernetes, VMware, FSSO, RADIUS, threat feeds</td></tr>
+        <tr><td>Key Actions</td><td>Auto-quarantine, automated remediation across Fortinet products</td><td>Auto-update policies based on cloud environment changes (SDN)</td></tr>
+        <tr><td>Threat Feeds</td><td>—</td><td>FortiGuard category, Malware Hash, IP/Domain/URL feeds</td></tr>
+      </tbody>
+    </table>
+
+    <h3>External Feeds</h3>
+    <ul class="content-list">
+      <li>Import plain-text lists via HTTP(S) or STIX format</li>
+      <li>FortiOS periodically fetches updates from the URI and applies changes immediately</li>
+      <li>Feed types: FortiGuard category, IP addresses, domain names, MAC addresses, malware hashes</li>
+      <li>External feed creates a resource object usable directly in firewall policies</li>
+    </ul>
+
+    <h3>Automation Stitches</h3>
+    <ul class="content-list">
+      <li>Stitches combine a <strong>trigger</strong> (event) + one or more <strong>actions</strong> (response)</li>
+      <li>Example trigger: IOC (Indicator of Compromise) detected by FortiAnalyzer</li>
+      <li>Example actions: quarantine host, block IP, send email alert, run a script</li>
+      <li>Enables faster time-to-prevention without manual administrator intervention</li>
+    </ul>
+
+    <div class="callout callout-analogy">
+      <div class="callout-header"><div class="callout-icon">≈</div>ANALOGY</div>
+      <div class="callout-body">Think of Automation Stitches like IFTTT for security: "IF FortiAnalyzer detects a compromised endpoint THEN FortiGate quarantines it automatically." No human in the loop needed for common threat patterns.</div>
+    </div>
+
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>EXAM NOTE</div>
+      <div class="callout-body">SDN connectors (External Connectors) auto-update FortiGate policies when cloud environments change — e.g., a new AWS EC2 instance spins up and gets added to a dynamic address group automatically. This is a key ISFW/cloud scenario question.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ LESSON 10 ═══════════════ -->
+  <div class="section-block" id="section-l10">
+    <div class="section-label">LESSON 10 · HARDWARE ACCELERATION ON FORTIGATE</div>
+    <h2>SPU Architecture, Traffic Offload &amp; Configuring HW Acceleration</h2>
+    <p>Fortinet's Security Processing Units (SPU) offload computationally intensive tasks (encryption, decryption, packet inspection) from the main CPU to dedicated hardware processors. This delivers line-rate performance even with deep inspection enabled.</p>
+
+    <div class="key-concept">
+      <strong>Core idea:</strong> NP processors handle network/forwarding tasks; CP processors handle security/content tasks. Traffic offloaded to NP/CP bypasses the main CPU, enabling much higher throughput. Not all traffic can be offloaded.
+    </div>
+
+    <h3>SPU Types</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Processor</th><th>Type</th><th>Primary Function</th><th>Examples</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>NP6</td><td>Network Processor</td><td>Packet forwarding, session offload, IPsec</td><td>FortiGate 200E, 2000E, 2500E</td></tr>
+        <tr><td>NP7</td><td>Network Processor (next-gen)</td><td>Same as NP6 + higher throughput, more features</td><td>FortiGate 400F, 600F, 900G</td></tr>
+        <tr><td>CP9</td><td>Content Processor</td><td>SSL/TLS inspection, IPS, antivirus acceleration</td><td>FortiGate 900G (ASIC version: CP9)</td></tr>
+        <tr><td>SP5 / SOC5</td><td>Security Processor (SoC)</td><td>Entry/mid-range — combines NP + CP on one chip</td><td>FortiGate 91G (ASIC version: SOC5)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Identifying SPU Type via CLI</h3>
+    <div class="pipeline-box"># Check NP model (vendor ID 1a29 = Fortinet):
+# diagnose hardware lspci | grep 1a29
+  → If NPID is 4e36 = NP6
+  → If NPID is 4e37 = NP7
+
+# Check CP model:
+# get hardware status
+  → Look for "ASIC version: CP9" (Content Processor version)
+
+# Confirm SP5 (SoC):
+# get hardware status
+  → Look for "ASIC version: SOC5"</div>
+
+    <h3>NP Direct Architecture</h3>
+    <ul class="content-list">
+      <li>Hardware design where NP processor connects directly to physical interfaces — eliminates the internal switch fabric (ISF) hop</li>
+      <li>Reduces forwarding latency to ultra-low levels</li>
+      <li>NP6 direct: available on FortiGate 200E, 2000E, 2500E (two or more NP6s)</li>
+      <li>NP7 direct: available on FortiGate 400F, 600F, 900G (ports X5–X8 directly wired to NP7)</li>
+      <li>Physical topology requirement: all traffic must enter and exit through interfaces on the same NP processor to be offloaded</li>
+    </ul>
+
+    <div class="callout callout-tip">
+      <div class="callout-header"><div class="callout-icon">→</div>TIP</div>
+      <div class="callout-body">If traffic enters on a port attached to NP7 but exits on a port attached to a different NP — it cannot be offloaded. Design your physical cabling so that all traffic for a given flow uses interfaces on the same NP chip.</div>
+    </div>
+
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>EXAM NOTE</div>
+      <div class="callout-body">NP = network forwarding offload. CP = security inspection offload. SP/SOC = combined chip for smaller models. The exam may ask you to identify the correct processor type for a given capability (e.g., "which processor accelerates SSL inspection?" → CP).</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ EXAM TIPS ═══════════════ -->
+  <div class="section-block" id="section-exam-tips">
+    <div class="section-label">EXAM TIPS</div>
+    <h2>What the Exam Focuses On</h2>
+    <p>The Enterprise Firewall 7.6 exam is scenario-based. You will be given a customer requirement and must identify the correct Fortinet product, mode, or configuration. Memorizing the "why" behind each feature is more valuable than memorizing CLI syntax.</p>
+
+    <div class="callout callout-note">
+      <div class="callout-header"><div class="callout-icon">★</div>TOP EXAM SCENARIOS TO KNOW</div>
+      <div class="callout-body">
+        <strong>1.</strong> "Branch needs basic firewall + VPN" → DEFW (30–90 series)<br>
+        <strong>2.</strong> "Campus needs micro-segmentation + wireless" → ISFW (100–900 series)<br>
+        <strong>3.</strong> "Customer wants same policy across 50 branches" → FortiManager + policy packages + normalized interfaces<br>
+        <strong>4.</strong> "Need UTM without changing IP addresses or routes" → Transparent mode VDOM<br>
+        <strong>5.</strong> "Hub-and-spoke VPN but spokes need to talk to each other directly" → ADVPN<br>
+        <strong>6.</strong> "FortiGate cluster: always want Device A as primary" → Override enabled + highest priority on Device A
+      </div>
+    </div>
+
+    <h3>Quick-Fire Exam Distinctions</h3>
+    <ul class="content-list">
+      <li><strong>802.1ad ≠ 802.3ad</strong> — 802.1ad = Q-in-Q VLAN tagging; 802.3ad = LACP link aggregation</li>
+      <li><strong>Retrieve ≠ Import</strong> — Retrieve captures to device layer revision only; Import moves to policy package</li>
+      <li><strong>Pre-run CLI template ≠ CLI template</strong> — pre-run auto-detaches after install; CLI template stays assigned</li>
+      <li><strong>Override disabled = uptime wins; Override enabled = priority wins</strong></li>
+      <li><strong>Web filter = URLs/domains; App control = app signatures; ISDB = IP+port only (no deep inspection)</strong></li>
+      <li><strong>NP = forwarding; CP = inspection; SOC = combined entry-level</strong></li>
+      <li><strong>Admin VDOM = no Policy &amp; Objects, no VPN, no User Auth</strong></li>
+      <li><strong>ADVPN requires IKEv2</strong> — hub uses <code>type dynamic</code>; spokes use <code>auto-discovery-receiver enable</code></li>
+      <li><strong>OSPF ECMP external routes</strong> — need <code>set rfc1583-compatible enable</code></li>
+      <li><strong>BGP ECMP</strong> — need <code>set ebgp-multipath enable</code> or <code>set ibgp-multipath enable</code></li>
+      <li><strong>Loopback as BGP source</strong> — requires <code>ebgp-enforce-multihop enable</code></li>
+      <li><strong>Global objects prefix</strong> — <code>g-</code> reserved on both FortiGate and FortiManager</li>
+    </ul>
+
+    <div class="scenario">
+      <div class="scenario-label">SCENARIO — EXAM QUESTION STYLE</div>
+      <div class="scenario-q">A company has 200 branch offices. Branch admins sometimes make changes directly on local FortiGates. The central security team needs to capture those local changes into FortiManager without disrupting the policy package. What is the correct operation?</div>
+      <div class="scenario-a"><strong>Answer:</strong> Run <strong>Retrieve</strong> (or enable Auto-retrieve). This captures the FortiGate's current running config into the device layer revision history without modifying the policy package. The team can then optionally run Import afterward if they want to move changes into the policy package.</div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">SCENARIO — EXAM QUESTION STYLE</div>
+      <div class="scenario-q">A customer needs to inspect encrypted web traffic on a transparent firewall inserted between a switch and a router without changing any IP addresses. Which FortiGate feature meets this requirement?</div>
+      <div class="scenario-a"><strong>Answer:</strong> A <strong>Traffic VDOM in Transparent mode</strong>. It operates at L2 so no IP addresses are assigned to interfaces, the network topology is unchanged, and FortiGate can still apply SSL inspection and security profiles to passing traffic.</div>
+    </div>
+  </div>
+
+
+</div><!-- end .main-content -->
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sidebar">
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">QUICK REFERENCE</div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">DCFW</div>
+      <div class="quick-ref-def">Data Center Firewall — 1000–7000 series. Hyperscale, HW SSL, low latency.</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">ISFW</div>
+      <div class="quick-ref-def">Internal Segmentation Firewall — 100–900 series. VLANs, VDOMs, wireless.</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">DEFW</div>
+      <div class="quick-ref-def">Distributed Enterprise Firewall — 30–90 series. Branch + basic IPsec VPN.</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">ADOM</div>
+      <div class="quick-ref-def">FortiManager virtual management domain. Supports multi-version (±2 versions).</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">NP7 vs CP9</div>
+      <div class="quick-ref-def">NP7 = network forwarding offload. CP9 = security inspection (SSL, IPS, AV).</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">ADVPN</div>
+      <div class="quick-ref-def">Hub-and-spoke + auto spoke-to-spoke shortcuts. Requires IKEv2.</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">Override OFF</div>
+      <div class="quick-ref-def">HA election: uptime &gt; priority. Override ON: priority &gt; uptime.</div>
+    </div>
+    <div class="quick-ref">
+      <div class="quick-ref-term">ISDB</div>
+      <div class="quick-ref-def">L3+L4 only — IP + port matching. No deep inspection. Policy &amp; SD-WAN use.</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">REMEMBER</div>
+    <div class="sidebar-note">The <code>g-</code> prefix is reserved for global objects on both FortiGate (VDOMs) and FortiManager (ADOMs). Never create custom objects starting with <code>g-</code> — they will conflict with global objects.</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">REMEMBER</div>
+    <div class="sidebar-note">Transparent VDOM = no IP on interfaces (management IP only) + forward-domain for VLAN separation + L2 insertion without topology changes. NAT VDOM = interfaces have IPs + acts as a full L3 firewall.</div>
+  </div>
+
+</div><!-- end .sidebar -->
+
+</main>
+
+<footer>
+  <div class="footer-left">NSE7<span>.</span></div>
+  <div class="footer-right">Enterprise Firewall 7.6 · Administrator Study Guide · FortiOS 7.6</div>
+</footer>
+
+<script>
+  /* ── SMOOTH SCROLL NAV ── */
+  function navTo(sectionId, el) {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const top = section.getBoundingClientRect().top + window.scrollY - 60;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  /* ── ACTIVE NAV TAB ON SCROLL ── */
+  const sectionIds = [
+    'section-overview', 'section-l1', 'section-l2', 'section-l3',
+    'section-l4', 'section-l5', 'section-l6', 'section-l7',
+    'section-l8', 'section-l9', 'section-l10', 'section-exam-tips'
+  ];
+
+  window.addEventListener('scroll', () => {
+    const tabs   = document.querySelectorAll('.nav-tab');
+    const offset = document.querySelector('.section-nav').offsetHeight + 32;
+    let active = 0;
+    sectionIds.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < offset + 40) active = i;
+    });
+    tabs.forEach((t, i) => t.classList.toggle('active', i === active));
+  });
+</script>
+
+</body>
+</html>

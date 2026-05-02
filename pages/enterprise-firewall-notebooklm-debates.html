@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — NotebookLM Debates</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  body { background: var(--cream); }
+
+  .nlm-header {
+    padding: 40px 60px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--cream);
+  }
+  .nlm-header h1 { margin-top: 14px; }
+  .nlm-header-meta {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+    max-width: 620px;
+  }
+
+  .how-to-banner {
+    margin: 32px 60px 0;
+    background: var(--purple-light);
+    border: 1px solid var(--purple-border);
+    border-radius: 16px;
+    padding: 18px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .how-to-icon {
+    width: 36px; height: 36px;
+    background: var(--purple);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: white; font-size: 16px;
+  }
+  .how-to-body { flex: 1; }
+  .how-to-title {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--purple); margin-bottom: 4px;
+  }
+  .how-to-text { font-size: 12px; color: var(--ink-soft); line-height: 1.7; }
+
+  .nlm-body {
+    padding: 40px 60px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .domain-block { display: flex; flex-direction: column; gap: 16px; }
+  .domain-label-row {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .domain-num-badge {
+    background: var(--ink); color: var(--cream);
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    padding: 4px 12px; border-radius: 20px; flex-shrink: 0;
+  }
+  .domain-label-text { flex: 1; }
+  .domain-label-name {
+    font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700;
+    color: var(--ink); line-height: 1.2;
+  }
+  .domain-label-desc { font-size: 12px; color: var(--ink-muted); margin-top: 3px; line-height: 1.5; }
+  .domain-prompt-count { font-size: 11px; color: var(--ink-muted); letter-spacing: 0.08em; flex-shrink: 0; }
+
+  .prompts-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  /* ── DEBATE CARD ── */
+  .prompt-card {
+    flex: 1; min-width: 0;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s ease;
+  }
+  .prompt-card:hover { box-shadow: 0 8px 28px rgba(26,18,9,0.09); }
+
+  .prompt-card-head {
+    padding: 18px 20px 14px;
+    background: var(--cream-dark);
+    display: flex; align-items: flex-start; gap: 12px;
+    cursor: pointer; user-select: none;
+  }
+  .prompt-card.expanded .prompt-card-head { border-bottom: 1px solid var(--border); }
+  .prompt-card-head:hover { opacity: 0.95; }
+
+  .prompt-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 15px;
+  }
+  .prompt-head-text { flex: 1; min-width: 0; }
+  .prompt-episode {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.14em; margin-bottom: 3px;
+    color: var(--purple);
+  }
+  .prompt-title {
+    font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700;
+    color: var(--ink); line-height: 1.25;
+  }
+  .prompt-motion {
+    font-size: 11px; color: var(--ink-muted); font-style: italic;
+    margin-top: 6px; line-height: 1.5;
+    padding: 6px 10px;
+    background: var(--cream);
+    border-radius: 6px;
+    border-left: 3px solid var(--purple-border);
+  }
+  .prompt-chevron {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: var(--ink-muted); margin-top: 2px;
+    transition: transform 0.25s ease;
+  }
+  .prompt-card.expanded .prompt-chevron { transform: rotate(180deg); }
+
+  /* ── COLLAPSE ── */
+  .prompt-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+  .prompt-card.expanded .prompt-body { grid-template-rows: 1fr; }
+  .prompt-body-inner {
+    overflow: hidden;
+    padding: 0 20px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .prompt-card.expanded .prompt-body-inner { padding: 16px 20px; }
+
+  /* ── VS SIDES ── */
+  .debate-sides {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .side {
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .side-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+    margin-bottom: 4px;
+  }
+  .side-a {
+    background: var(--orange-light);
+    border: 1px solid var(--orange-border);
+    color: var(--ink-soft);
+  }
+  .side-a .side-label { color: var(--orange); }
+  .side-b {
+    background: var(--purple-light);
+    border: 1px solid var(--purple-border);
+    color: var(--ink-soft);
+  }
+  .side-b .side-label { color: var(--purple); }
+
+  .prompt-text {
+    font-size: 13px; color: var(--ink-soft); line-height: 1.75;
+    background: var(--cream-dark); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; font-style: italic;
+    position: relative;
+  }
+  .prompt-text::before {
+    content: '"';
+    font-family: 'Fraunces', serif; font-size: 48px;
+    color: var(--border); position: absolute;
+    top: -4px; left: 10px; line-height: 1;
+  }
+
+  .prompt-footer {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .prompt-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .prompt-tag {
+    font-size: 10px; letter-spacing: 0.08em; padding: 3px 9px;
+    border-radius: 20px;
+    background: var(--purple-light); border: 1px solid var(--purple-border); color: var(--purple);
+  }
+  .prompt-tag.tag-exam {
+    background: var(--orange-light); border-color: var(--orange-border); color: var(--orange);
+  }
+  .copy-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--purple); background: none;
+    border: 1px solid var(--purple-border);
+    border-radius: 8px; padding: 6px 12px;
+    cursor: pointer; transition: background 0.15s ease; flex-shrink: 0;
+  }
+  .copy-btn:hover { background: var(--purple-light); }
+  .copy-btn.copied {
+    background: var(--green-light); border-color: var(--green-border); color: var(--green);
+  }
+
+  .prompt-icon { background: var(--purple-light); border: 1px solid var(--purple-border); }
+
+  @media (max-width: 900px) {
+    .nlm-header { padding: 24px 20px; }
+    .how-to-banner { margin: 20px 20px 0; }
+    .nlm-body { padding: 28px 20px 60px; }
+    .prompts-grid { flex-wrap: wrap; }
+    .prompt-card { flex: 1 1 300px; }
+    .debate-sides { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nlm-header">
+  <div class="breadcrumb">
+    <a href="../index.html">NSE7</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Enterprise Firewall 7.6</span>
+    <span class="breadcrumb-sep">/</span>
+    <a href="enterprise-firewall-notebooklm-hub.html">NotebookLM</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Debates</span>
+  </div>
+  <div class="day-badge" style="margin-top:14px;">
+    <span class="day-badge-dot"></span>
+    NOTEBOOKLM · POINT-COUNTERPOINT
+  </div>
+  <h1>Technical <em>Debates</em></h1>
+  <p class="nlm-header-meta">Each prompt frames an Oxford-style debate — one host argues one side, the other argues the opposite. Great for understanding the trade-offs examiners actually test.</p>
+</div>
+
+<div class="how-to-banner">
+  <div class="how-to-icon">⚔️</div>
+  <div class="how-to-body">
+    <div class="how-to-title">HOW DEBATES WORK IN NOTEBOOKLM</div>
+    <div class="how-to-text">Upload your study materials, open Audio Overview → Customise, paste a debate prompt, and generate. The hosts will take opposing positions and argue them out — the motion is stated in each card so you know what stance each side takes before you listen.</div>
+  </div>
+</div>
+
+<div class="nlm-body">
+
+  <!-- DOMAIN 1 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 1</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">System Configuration &amp; Security Fabric</div>
+        <div class="domain-label-desc">HA modes, VDOMs vs physical, hardware acceleration</div>
+      </div>
+      <div class="domain-prompt-count">2 DEBATES</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🔄</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">DEBATE · DOMAIN 1</div>
+            <div class="prompt-title">Active-Active vs Active-Passive HA</div>
+            <div class="prompt-motion">Motion: "For enterprise firewalls, Active-Active HA is always worth the complexity over Active-Passive."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="debate-sides">
+            <div class="side side-a"><div class="side-label">SIDE A · PRO A/A</div>Both units process traffic, full hardware utilisation, no wasted capacity during normal operation.</div>
+            <div class="side side-b"><div class="side-label">SIDE B · PRO A/P</div>Simpler failover, predictable session behaviour, no asymmetric routing risk or session sync overhead.</div>
+          </div>
+          <div class="prompt-text" id="debate-d1a">Frame this as a structured debate between two senior network engineers. One argues passionately that Active-Active is the only rational choice — you're paying for two firewalls, you should use both of them, and load sharing is critical for high-throughput data centre deployments. The other pushes back hard: Active-Active creates asymmetric routing problems on broadcast segments, TCP session pickup behaves differently than in A/P, and the session synchronisation overhead actually reduces total throughput under heavy load. Make it technical — bring in load-balancing algorithms, the difference in how each mode handles UDP and ICMP sessions, and the heartbeat interface requirements. Both hosts must end by naming a specific enterprise scenario where their mode clearly wins and the other loses.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">FGCP A/A · A/P</span>
+              <span class="prompt-tag">Session Sync</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('debate-d1a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🏗️</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">DEBATE · DOMAIN 1</div>
+            <div class="prompt-title">Physical Firewalls vs VDOMs</div>
+            <div class="prompt-motion">Motion: "Separate physical firewalls always provide stronger isolation than VDOMs on a shared chassis."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="debate-sides">
+            <div class="side side-a"><div class="side-label">SIDE A · PRO PHYSICAL</div>True air-gap isolation, separate failure domains, no shared kernel or resource contention between tenants.</div>
+            <div class="side side-b"><div class="side-label">SIDE B · PRO VDOMs</div>Same policy enforcement engine, cost efficiency, centrally managed, traffic isolation via inter-VDOM links is operationally proven.</div>
+          </div>
+          <div class="prompt-text" id="debate-d1b">One host makes the security case for separate physical firewalls — a software bug could allow VDOM escape, a DDoS on one VDOM could starve CPU and memory for all others, and a shared management plane means one compromised admin account has access everywhere. The other host argues VDOMs are as secure as physical separation in practice — inter-VDOM links enforce traffic policies the same way physical interfaces do, the global database provides consistent admin oversight, and for most enterprises the management overhead of multiple physical devices outweighs any theoretical isolation benefit. Walk through the four VDOM types, explain exactly how inter-VDOM link traffic is inspected, and have both hosts agree on the specific threat model where physical separation is truly necessary versus where it's overkill.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">VDOMs</span>
+              <span class="prompt-tag">Inter-VDOM Links</span>
+              <span class="prompt-tag tag-exam">Exam Weight: Medium</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('debate-d1b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOMAIN 2 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 2</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Central Management</div>
+        <div class="domain-label-desc">FortiManager centralised vs local control</div>
+      </div>
+      <div class="domain-prompt-count">1 DEBATE</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🏢</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">DEBATE · DOMAIN 2</div>
+            <div class="prompt-title">FortiManager for Every Device vs Local Control</div>
+            <div class="prompt-motion">Motion: "Every enterprise FortiGate must be managed through FortiManager — no exceptions, no direct CLI access."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="debate-sides">
+            <div class="side side-a"><div class="side-label">SIDE A · CENTRALISE EVERYTHING</div>Policy drift is inevitable without it. Consistency, audit trails, and automation are non-negotiable at enterprise scale.</div>
+            <div class="side side-b"><div class="side-label">SIDE B · LOCAL CONTROL</div>FortiManager is a single management failure point. Small branches with stable configs don't need the complexity overhead.</div>
+          </div>
+          <div class="prompt-text" id="debate-d2a">The centralised advocate argues policy drift is the silent killer of enterprise security — the moment you allow direct CLI access, configurations diverge, and the next audit finds 47 devices with inconsistent rules. FortiManager's device-policy layer separation, ADOM structure, and install workflow are non-negotiable for any serious deployment. The local-control advocate fires back: FortiManager is a single point of management failure, the Device layer vs Policy layer distinction confuses junior engineers into making dangerous mistakes, and for a regional office with five static policies, adding FortiManager is pure overhead. Have both hosts walk through a concrete failure scenario — one where FortiManager's retrieve operation saves the day, and one where it made an incident worse — and then agree on an org size and complexity threshold where each approach is clearly the right call.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">ADOMs</span>
+              <span class="prompt-tag">Policy Drift</span>
+              <span class="prompt-tag">Device vs Policy Layer</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('debate-d2a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOMAIN 3 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 3</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Security Profiles</div>
+        <div class="domain-label-desc">SSL inspection, IPS modes, detection vs enforcement</div>
+      </div>
+      <div class="domain-prompt-count">2 DEBATES</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🔐</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">DEBATE · DOMAIN 3</div>
+            <div class="prompt-title">Full SSL Inspection vs Certificate Inspection</div>
+            <div class="prompt-motion">Motion: "The performance cost and privacy implications of full SSL deep inspection outweigh the security benefits for most enterprises."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="debate-sides">
+            <div class="side side-a"><div class="side-label">SIDE A · INSPECT EVERYTHING</div>Without full inspection you're blind to 80% of traffic. Every threat actor hides in HTTPS. You're just running an expensive stateful firewall otherwise.</div>
+            <div class="side side-b"><div class="side-label">SIDE B · LIMIT INSPECTION</div>CA cert deployment nightmare, CP processor saturation, TLS 1.3 forward secrecy limits what you see anyway, and HTTP/3 over QUIC is nearly uninspectable.</div>
+          </div>
+          <div class="prompt-text" id="debate-d3a">One host argues full SSL deep inspection is the entire point of deploying an enterprise NGFW — if you're not decrypting HTTPS, you're relying on URL categories and SNI alone, and every attacker has known this for years. The other counters: the CA certificate deployment program for 5,000 endpoints is a multi-month project, the CP9 processor has real throughput limits, TLS 1.3 with ephemeral keys means you can't cache the session key for inspection, and blocking QUIC-based HTTP/3 traffic just breaks modern SaaS apps. Walk through exactly what FortiGate sees with certificate inspection versus full inspection — what threats are visible in each mode. Then tackle the HTTP/3 QUIC inspection problem: why does UDP-based transport break the traditional inspection model? End by designing a tiered policy: which traffic categories get full inspection, which get certificate inspection only, and which get exempted.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">SSL Deep Inspection</span>
+              <span class="prompt-tag">TLS 1.3</span>
+              <span class="prompt-tag">HTTP/3 · QUIC</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('debate-d3a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🛡️</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">DEBATE · DOMAIN 3</div>
+            <div class="prompt-title">IPS Block Mode from Day One vs Monitor First</div>
+            <div class="prompt-motion">Motion: "Running IPS in monitor mode before block mode is a necessary baselining period, not security theatre."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="debate-sides">
+            <div class="side side-a"><div class="side-label">SIDE A · BLOCK FROM DAY ONE</div>Monitor mode is security theatre. You know about attacks and choose to let them land. What's the point of IPS if you won't block?</div>
+            <div class="side side-b"><div class="side-label">SIDE B · MONITOR FIRST</div>False positives will break legitimate ERP and SaaS traffic. You need a baselining period to tune severity thresholds and target settings.</div>
+          </div>
+          <div class="prompt-text" id="debate-d3b">The block-first advocate argues running IPS in monitor mode while attacks arrive is a liability — you have logs showing active exploitation attempts, you know the signature fired, and you chose not to act. The monitor-first advocate argues block mode without tuning is reckless: a high-severity IPS signature firing on legitimate Oracle database traffic at 3am will drop business-critical connections and generate an incident that costs more than the threat would have. Make it technical — walk through the IPS profile configuration options (filter type, target server vs client, severity levels, action per signature), explain what hping3 reveals during a validation test, and design a staged rollout: what's the minimum monitor period, which signature categories can go straight to block, and which need tuning?</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">IPS Profiles</span>
+              <span class="prompt-tag">Severity · Target</span>
+              <span class="prompt-tag">hping3</span>
+              <span class="prompt-tag tag-exam">Exam Weight: Medium</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('debate-d3b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOMAIN 4 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 4</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Routing</div>
+        <div class="domain-label-desc">OSPF vs BGP for enterprise WAN</div>
+      </div>
+      <div class="domain-prompt-count">1 DEBATE</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🗺️</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">DEBATE · DOMAIN 4</div>
+            <div class="prompt-title">OSPF vs BGP for Enterprise WAN</div>
+            <div class="prompt-motion">Motion: "BGP has no place inside the enterprise campus — OSPF is always the right interior routing protocol."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="debate-sides">
+            <div class="side side-a"><div class="side-label">SIDE A · OSPF INSIDE</div>Link-state convergence, topology awareness, natural ECMP, built for interior routing. BGP is overkill for campus networks.</div>
+            <div class="side side-b"><div class="side-label">SIDE B · BGP EVERYWHERE</div>Policy-based traffic engineering, AS path manipulation, IBGP between data centers is standard — OSPF gives you no control over path selection.</div>
+          </div>
+          <div class="prompt-text" id="debate-d4a">The OSPF advocate argues link-state routing was built for exactly this use case — fast convergence via SPF, topology-aware ECMP, and zero redistribution complexity when you stay within one domain. The BGP advocate counters: modern enterprise WANs span multiple data centers, cloud on-ramps, and SD-WAN edges where path selection policy matters more than convergence speed. IBGP between data centers is standard practice, AS path manipulation gives you traffic engineering OSPF simply cannot do, and running BGP across FortiManager templates means you deploy it consistently at any scale. Make both hosts confront the redistribution problem head-on: if you run both inside an enterprise, where does the boundary sit, what are the exact redistribution pitfalls (routing loops, metric translation), and what breaks if you get it wrong? Conclude with a topology where each protocol wins outright.</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">OSPF SPF</span>
+              <span class="prompt-tag">BGP IBGP</span>
+              <span class="prompt-tag">Redistribution</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('debate-d4a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOMAIN 5 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 5</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">VPN Technologies</div>
+        <div class="domain-label-desc">ADVPN vs hub-spoke, certificate auth vs PSK</div>
+      </div>
+      <div class="domain-prompt-count">2 DEBATES</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">✨</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">DEBATE · DOMAIN 5</div>
+            <div class="prompt-title">ADVPN vs Traditional Hub-and-Spoke</div>
+            <div class="prompt-motion">Motion: "ADVPN's troubleshooting complexity isn't worth the spoke-to-spoke latency savings for most enterprise deployments."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="debate-sides">
+            <div class="side side-a"><div class="side-label">SIDE A · TRADITIONAL WINS</div>Static hub-spoke is predictable. You know every tunnel. When ADVPN fails, where do you even start debugging shortcut negotiation?</div>
+            <div class="side side-b"><div class="side-label">SIDE B · ADVPN WINS</div>Shortcut tunnels are transparent to endpoints. Hub bottlenecks disappear automatically. Same management simplicity, dramatically better performance.</div>
+          </div>
+          <div class="prompt-text" id="debate-d5a">The traditional-hub-spoke advocate argues that when something breaks in a 200-site ADVPN deployment — a shortcut tunnel fails to form, traffic hair-pins through the hub unexpectedly, dynamic routing learns the wrong spoke subnets — you have twice the failure modes to debug compared to static hub-spoke where every tunnel is explicitly configured and predictable. The ADVPN advocate argues shortcut tunnels are transparent to end devices, the hub simply acts as matchmaker and then steps out of the data path, and with IKEv2 and dynamic routing the config is no more complex than regular hub-spoke. Walk both hosts through a concrete failure scenario: a spoke-to-spoke shortcut doesn't come up. Trace through the ADVPN signalling process step by step — what the hub sends, how the spokes negotiate, and exactly where in that chain each failure mode lives. Who makes the better case, and for what deployment size does the crossover point occur?</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">ADVPN</span>
+              <span class="prompt-tag">Shortcut Tunnels</span>
+              <span class="prompt-tag">IKEv2</span>
+              <span class="prompt-tag tag-exam">Exam Weight: High</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('debate-d5a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="prompt-icon">🔑</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">DEBATE · DOMAIN 5</div>
+            <div class="prompt-title">Certificate Auth vs Pre-Shared Keys for IPsec</div>
+            <div class="prompt-motion">Motion: "Pre-shared keys are good enough for enterprise IPsec VPNs — certificate PKI adds complexity without proportional security gains."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="debate-sides">
+            <div class="side side-a"><div class="side-label">SIDE A · PSK IS FINE</div>A 32-char random PSK is cryptographically solid. No PKI to maintain, no CA as a new attack surface, simpler at any reasonable scale.</div>
+            <div class="side side-b"><div class="side-label">SIDE B · CERTS REQUIRED</div>One leaked PSK compromises every tunnel that shares it. No revocation capability. Doesn't scale past ~50 sites without a management nightmare.</div>
+          </div>
+          <div class="prompt-text" id="debate-d5b">The PSK advocate argues a 32-character randomly generated pre-shared key is cryptographically indistinguishable from a certificate in terms of the actual protection it provides — the IKEv2 handshake is just as secure, DH group negotiation is identical, and AES-GCM encryption is the same on both sides. Adding a PKI just creates a CA as a high-value target, requires certificate lifecycle management, and creates operational failures when certs expire. The certificate advocate fires back: the PSK model has a fundamental scaling problem — either every site shares the same PSK (one breach = all tunnels compromised, no revocation possible) or you manage per-site PSKs in a spreadsheet. Walk through the IKEv2 authentication options in FortiOS, explain what happens during certificate-based mutual authentication versus PSK validation, and both hosts must agree: at exactly what number of sites and what compliance requirement does certificate auth become non-negotiable?</div>
+          <div class="prompt-footer">
+            <div class="prompt-tags">
+              <span class="prompt-tag">IKEv2 Auth</span>
+              <span class="prompt-tag">PSK vs Certs</span>
+              <span class="prompt-tag">PKI</span>
+              <span class="prompt-tag tag-exam">Exam Weight: Medium</span>
+            </div>
+            <button class="copy-btn" onclick="copyPrompt('debate-d5b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+  <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · NotebookLM Debates</div>
+</footer>
+
+<script>
+  function togglePrompt(card) { card.classList.toggle('expanded'); }
+  function copyPrompt(id, btn) {
+    btn.closest('.prompt-card').classList.add('expanded');
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Copy`;
+      }, 2000);
+    });
+  }
+</script>
+</body>
+</html>

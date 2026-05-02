@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — Topic Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  /* ── PAGE LAYOUT ── */
+  body { background: var(--cream); }
+
+  .bp-header {
+    padding: 40px 60px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--cream);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+  }
+  .bp-header-left { flex: 1; }
+
+  .bp-progress-bar-wrap {
+    width: 240px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .bp-progress-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+  }
+  .bp-progress-track {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    height: 10px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .bp-progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--orange);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+  .bp-progress-numbers {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .bp-progress-numbers span {
+    font-size: 22px;
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  /* ── GRID ── */
+  .bp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    padding: 40px 60px 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ── DOMAIN SECTION (wraps header + cards) ── */
+  .domain-section {
+    grid-column: 1 / -1;
+  }
+
+  /* ── DOMAIN CARDS (collapsible sub-grid) ── */
+  .domain-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    padding-top: 24px;
+    max-height: 5000px;
+    overflow: hidden;
+    opacity: 1;
+    transition: max-height 0.4s ease, padding-top 0.3s ease, opacity 0.25s ease;
+  }
+  .domain-section.collapsed .domain-cards {
+    max-height: 0;
+    padding-top: 0;
+    opacity: 0;
+  }
+
+  /* ── LESSON VIEW — flatten back into main grid ── */
+  .bp-grid.view-lesson .domain-section  { display: contents; }
+  .bp-grid.view-lesson .domain-header   { display: none !important; }
+  .bp-grid.view-lesson .domain-cards    { display: contents; }
+
+  /* ── DOMAIN HEADER ── */
+  .domain-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 28px;
+    background: var(--ink);
+    border-radius: 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.15s;
+  }
+  .domain-header:hover { opacity: 0.9; }
+
+  /* ── DOMAIN CHEVRON ── */
+  .domain-chevron {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6a5a48;
+    transition: transform 0.22s ease;
+  }
+  .domain-chevron svg { display: block; }
+  .domain-section.collapsed .domain-chevron { transform: rotate(-90deg); }
+  .domain-num {
+    font-family: 'Fraunces', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--orange);
+    background: rgba(255,107,53,0.15);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 8px;
+    padding: 5px 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .domain-text { flex: 1; min-width: 0; }
+  .domain-name {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .domain-desc {
+    font-size: 12px;
+    color: #9a8070;
+    line-height: 1.5;
+  }
+  .domain-progress {
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 80px;
+  }
+  .domain-pct {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--orange);
+    line-height: 1;
+    display: block;
+  }
+  .domain-pct-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: #6a5a48;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* ── LESSON CARD ── */
+  .lesson-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .lesson-card-header {
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--cream-dark);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .lesson-card-header:hover { background: #ede5d4; }
+  .lesson-card.collapsed .lesson-card-header { border-bottom: none; }
+
+  .lesson-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .lesson-card-title-wrap { flex: 1; min-width: 0; }
+  .lesson-card-num-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ink-muted);
+    margin-bottom: 2px;
+  }
+  .lesson-card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lesson-card-mini-bar {
+    width: 36px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .lesson-pct {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--orange);
+    line-height: 1;
+    display: block;
+  }
+  .lesson-pct-label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    display: block;
+    margin-top: 1px;
+  }
+
+  /* ── CHEVRON ── */
+  .lesson-chevron {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-muted);
+    transition: transform 0.22s ease;
+  }
+  .lesson-chevron svg { display: block; }
+  .lesson-card.collapsed .lesson-chevron { transform: rotate(-90deg); }
+
+  /* ── TOPIC LIST (collapsible) ── */
+  .topic-list {
+    list-style: none;
+    padding: 10px 0;
+    flex: 1;
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  .lesson-card.collapsed .topic-list {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .topic-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 9px 22px;
+    cursor: pointer;
+    transition: background 0.12s;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+  .topic-item:last-child { border-bottom: none; }
+  .topic-item:hover { background: var(--orange-light); }
+  .topic-item.done { background: var(--green-light); }
+  .topic-item.done:hover { background: #dff0e0; }
+
+  .topic-check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .topic-item.done .topic-check {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .topic-item.done .topic-check::after {
+    content: '';
+    width: 10px;
+    height: 6px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+    display: block;
+  }
+  .topic-text {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .topic-item.done .topic-text {
+    text-decoration: line-through;
+    color: var(--ink-muted);
+  }
+
+  /* ── LESSON FOOTER ── */
+  .lesson-card-footer {
+    padding: 10px 22px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--cream-dark);
+    max-height: 60px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.2s ease;
+  }
+  .lesson-card.collapsed .lesson-card-footer {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+  .lesson-track-wrap {
+    background: var(--border);
+    border-radius: 99px;
+    height: 4px;
+    overflow: hidden;
+  }
+  .lesson-track-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--green);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* ── VIEW TOGGLE ── */
+  .view-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 20px 60px 0;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .view-btn {
+    padding: 9px 22px;
+    font-size: 11px;
+    font-family: 'Epilogue', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--border);
+    background: var(--cream);
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .view-btn:first-child { border-radius: 8px 0 0 8px; }
+  .view-btn:last-child  { border-radius: 0 8px 8px 0; border-left: none; }
+  .view-btn:hover:not(.active) { background: var(--cream-dark); color: var(--ink); }
+  .view-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .bp-header { padding: 24px 20px 24px; flex-direction: column; align-items: flex-start; }
+    .bp-progress-bar-wrap { width: 100%; text-align: left; }
+    .view-toggle { padding: 16px 16px 0; }
+    .bp-grid { padding: 24px 16px 40px; grid-template-columns: 1fr; }
+    .domain-header { flex-wrap: wrap; gap: 12px; }
+    .domain-progress { min-width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bp-header">
+  <div class="bp-header-left">
+    <div class="breadcrumb">
+      <a href="../index.html">NSE7</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>Enterprise Firewall 7.6</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Topic Blueprint</span>
+    </div>
+    <div class="day-badge" style="margin-bottom:12px;">
+      <span class="day-badge-dot"></span>
+      ENTERPRISE FIREWALL 7.6 · TOPIC BLUEPRINT
+    </div>
+    <h1>Topic <em>Blueprint</em></h1>
+    <p style="font-size:13px;color:var(--ink-muted);margin-top:8px;line-height:1.6;">Organised by exam domain. Tick off each topic as you lock it in.</p>
+  </div>
+  <div class="bp-progress-bar-wrap">
+    <div class="bp-progress-label">OVERALL PROGRESS</div>
+    <div class="bp-progress-track">
+      <div class="bp-progress-fill" id="global-bar"></div>
+    </div>
+    <div class="bp-progress-numbers">
+      <span id="global-pct">0</span>% &nbsp;·&nbsp; <span id="global-done">0</span> / <span id="global-total">0</span> topics
+    </div>
+  </div>
+</header>
+
+<div class="view-toggle">
+  <button class="view-btn active" onclick="setView('domain', this)">By Domain</button>
+  <button class="view-btn" onclick="setView('lesson', this)">By Lesson</button>
+</div>
+
+<div class="bp-grid">
+
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 1 — SYSTEM CONFIGURATION & SECURITY FABRIC
+       Lessons: 1, 3, 4, 9, 10
+       ════════════════════════════════════════════ -->
+  <div class="domain-section" data-domain="d1">
+  <div class="domain-header" onclick="toggleDomain(this.closest('.domain-section'))">
+    <div class="domain-num">DOMAIN 1</div>
+    <div class="domain-text">
+      <div class="domain-name">System Configuration &amp; Security Fabric</div>
+      <div class="domain-desc">Security Fabric integration, hardware acceleration, HA cluster modes, VLANs and VDOMs in enterprise architectures</div>
+    </div>
+    <div class="domain-progress">
+      <span class="domain-pct" id="dpct-d1">0%</span>
+      <span class="domain-pct-label">COMPLETE</span>
+    </div>
+    <div class="domain-chevron">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+  <div class="domain-cards">
+
+  <!-- L1 -->
+  <div class="lesson-card" data-lesson="1" data-domain="d1">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">01</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 1</div>
+        <div class="lesson-card-title">Network Security Architecture</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-1">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 1)"><div class="topic-check"></div><span class="topic-text">DCFW / ISFW / DEFW roles &amp; use cases</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 1)"><div class="topic-check"></div><span class="topic-text">FortiGate series: 30–90, 100–900, 1000–7000, VM</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 1)"><div class="topic-check"></div><span class="topic-text">5 use cases: DCFW, ISFW, Cloud, Distributed NGFW, DEFW</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 1)"><div class="topic-check"></div><span class="topic-text">ZTNA components (FortiGate, FortiClient, FortiAuthenticator)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 1)"><div class="topic-check"></div><span class="topic-text">FortiManager as unified management console</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-1"></div></div>
+    </div>
+  </div>
+
+  <!-- L3 -->
+  <div class="lesson-card" data-lesson="3" data-domain="d1">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">03</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 3</div>
+        <div class="lesson-card-title">VLANs &amp; VDOMs</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-3">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">802.1Q tagging — EtherType 0x8100, 4k VLANs</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">802.1ad (Q-in-Q) — 16M VLANs, NOT the same as 802.3ad</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">VXLAN — UDP port 4789, overlay tunneling</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">LACP / 802.3ad aggregate interfaces</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">HW switch vs SW switch — STP, SSIDs, intraswitch block</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">VDOM types: Admin, Traffic NAT, Traffic Transparent, LAN Extension</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">Enable VDOMs: vdom-mode multi-vdom; default limit = 10</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">Inter-VDOM links — naming (0/1 suffix), routing + policies required</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">Transparent VDOM — no IP on interfaces, forward-domain for VLANs</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 3)"><div class="topic-check"></div><span class="topic-text">Global objects — g- prefix, update all VDOMs automatically</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-3"></div></div>
+    </div>
+  </div>
+
+  <!-- L4 -->
+  <div class="lesson-card" data-lesson="4" data-domain="d1">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">04</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 4</div>
+        <div class="lesson-card-title">High Availability</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-4">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 4)"><div class="topic-check"></div><span class="topic-text">FGCP Active-Passive vs Active-Active modes</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 4)"><div class="topic-check"></div><span class="topic-text">HA cluster requirements: model, firmware, license, hard drive, mode</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 4)"><div class="topic-check"></div><span class="topic-text">Heartbeat interfaces — best practice: 2+ interfaces</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 4)"><div class="topic-check"></div><span class="topic-text">Primary election (override OFF): ports → uptime → priority → serial</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 4)"><div class="topic-check"></div><span class="topic-text">Primary election (override ON): ports → priority → uptime → serial</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 4)"><div class="topic-check"></div><span class="topic-text">Force failover: diagnose sys ha reset-uptime</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 4)"><div class="topic-check"></div><span class="topic-text">FGSP vs FGCP vs VRRP — which problem each solves</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-4"></div></div>
+    </div>
+  </div>
+
+  <!-- L9 -->
+  <div class="lesson-card" data-lesson="9" data-domain="d1">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">09</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 9</div>
+        <div class="lesson-card-title">Security Fabric</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-9">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 9)"><div class="topic-check"></div><span class="topic-text">Security Fabric: Broad, Integrated, Automated</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 9)"><div class="topic-check"></div><span class="topic-text">Fabric Connectors — Fortinet-native (EMS, FortiAnalyzer, FortiSandbox)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 9)"><div class="topic-check"></div><span class="topic-text">External Connectors — public/private SDN, endpoint, threat feeds</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 9)"><div class="topic-check"></div><span class="topic-text">SDN connectors auto-update policies on cloud environment changes</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 9)"><div class="topic-check"></div><span class="topic-text">External feeds — HTTP(S)/STIX, periodic fetch, creates policy object</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 9)"><div class="topic-check"></div><span class="topic-text">Automation stitches — trigger + action pairs (e.g., IOC → quarantine)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 9)"><div class="topic-check"></div><span class="topic-text">Security Fabric use cases in enterprise scenarios</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-9"></div></div>
+    </div>
+  </div>
+
+  <!-- L10 -->
+  <div class="lesson-card" data-lesson="10" data-domain="d1">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">10</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 10</div>
+        <div class="lesson-card-title">Hardware Acceleration</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-10">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">SPU overview: NP (network) vs CP (content) vs SOC (combined)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">NP6 — FortiGate 200E, 2000E, 2500E</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">NP7 — FortiGate 400F, 600F, 900G (ports X5–X8)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">CP9 — content processor, SSL/IPS/AV acceleration</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">SP5 / SOC5 — entry/mid-range combined chip (e.g., FortiGate 91G)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">CLI: diagnose hardware lspci | grep 1a29 → NP ID (4e36=NP6, 4e37=NP7)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">CLI: get hardware status → ASIC version (CP9, SOC5)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">NP Direct architecture — reduces latency, same-NP port requirement</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 10)"><div class="topic-check"></div><span class="topic-text">Traffic offload conditions — what can and cannot be offloaded</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-10"></div></div>
+    </div>
+  </div>
+
+
+  </div><!-- end domain-cards d1 -->
+  </div><!-- end domain-section d1 -->
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 2 — CENTRAL MANAGEMENT
+       Lessons: 2
+       ════════════════════════════════════════════ -->
+  <div class="domain-section" data-domain="d2">
+  <div class="domain-header" onclick="toggleDomain(this.closest('.domain-section'))">
+    <div class="domain-num">DOMAIN 2</div>
+    <div class="domain-text">
+      <div class="domain-name">Central Management</div>
+      <div class="domain-desc">FortiManager ADOMs, device provisioning, policy management, script automation, and configuration synchronisation at scale</div>
+    </div>
+    <div class="domain-progress">
+      <span class="domain-pct" id="dpct-d2">0%</span>
+      <span class="domain-pct-label">COMPLETE</span>
+    </div>
+    <div class="domain-chevron">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+  <div class="domain-cards">
+
+  <!-- L2 -->
+  <div class="lesson-card" data-lesson="2" data-domain="d2">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">02</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 2</div>
+        <div class="lesson-card-title">Central Management</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-2">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">ADOM architecture — with vs without ADOMs</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">Global database: g- prefix, cross-ADOM objects</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">Device layer vs Policy layer — which ops touch which</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">Retrieve / Import / Install / Quick Install / Reinstall</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">Normalized interfaces — per-platform vs per-device mapping</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">Dynamic objects &amp; metadata variables ($variable)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">Script types: Remote CLI, Device DB, Policy Package, CLI Template</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">ZTP vs LTP — auto-link and model devices</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 2)"><div class="topic-check"></div><span class="topic-text">Pre-run CLI templates vs CLI templates (auto-detach vs persistent)</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-2"></div></div>
+    </div>
+  </div>
+
+
+  </div><!-- end domain-cards d2 -->
+  </div><!-- end domain-section d2 -->
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 3 — SECURITY PROFILES
+       Lessons: 6
+       ════════════════════════════════════════════ -->
+  <div class="domain-section" data-domain="d3">
+  <div class="domain-header" onclick="toggleDomain(this.closest('.domain-section'))">
+    <div class="domain-num">DOMAIN 3</div>
+    <div class="domain-text">
+      <div class="domain-name">Security Profiles</div>
+      <div class="domain-desc">SSL/SSH inspection, web filter, application control, ISDB, and IPS integration for enterprise threat protection</div>
+    </div>
+    <div class="domain-progress">
+      <span class="domain-pct" id="dpct-d3">0%</span>
+      <span class="domain-pct-label">COMPLETE</span>
+    </div>
+    <div class="domain-chevron">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+  <div class="domain-cards">
+
+  <!-- L6 -->
+  <div class="lesson-card" data-lesson="6" data-domain="d3">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">06</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 6</div>
+        <div class="lesson-card-title">Security Profiles</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-6">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">SSL vs TLS — deprecated (SSL, TLS 1.0/1.1) vs current (1.2, 1.3)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">TLS cipher suite format: KeyExchange_Auth_WITH_Encryption_Hash</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">TCP → TLS handshake sequence (3-way then TLS)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">HTTP/3 — QUIC/UDP, TLS 1.3 mandatory</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">Web filter — L7 URL/domain, FortiGuard dependency</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">Application control — L7 signatures, flow-based, FortiGuard</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">ISDB — L3+L4 only, no deep inspection, used in SD-WAN rules</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">IPS profiles — filter type, target (server/client), severity, action</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 6)"><div class="topic-check"></div><span class="topic-text">hping3 — ethical attack simulator for IPS validation</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-6"></div></div>
+    </div>
+  </div>
+
+
+  </div><!-- end domain-cards d3 -->
+  </div><!-- end domain-section d3 -->
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 4 — ROUTING
+       Lessons: 5
+       ════════════════════════════════════════════ -->
+  <div class="domain-section" data-domain="d4">
+  <div class="domain-header" onclick="toggleDomain(this.closest('.domain-section'))">
+    <div class="domain-num">DOMAIN 4</div>
+    <div class="domain-text">
+      <div class="domain-name">Routing</div>
+      <div class="domain-desc">OSPF area design, route summarisation and redistribution; BGP for enterprise WAN, AS path manipulation and route filtering</div>
+    </div>
+    <div class="domain-progress">
+      <span class="domain-pct" id="dpct-d4">0%</span>
+      <span class="domain-pct-label">COMPLETE</span>
+    </div>
+    <div class="domain-chevron">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+  <div class="domain-cards">
+
+  <!-- L5 -->
+  <div class="lesson-card" data-lesson="5" data-domain="d4">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">05</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 5</div>
+        <div class="lesson-card-title">Dynamic Routing Protocols</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-5">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">OSPF — link-state, Dijkstra's SPF, 30 min periodic refresh</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">OSPF router types: Backbone, ABR, ASBR</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">OSPF redistribution — disabled by default, per-protocol config</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">OSPF ECMP external routes — rfc1583-compatible enable</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">BGP — IBGP (same AS) vs EBGP (different AS)</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">BGP redistribution — disabled by default</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">BGP ECMP — ebgp-multipath enable / ibgp-multipath enable</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">Loopback as BGP source — update-source + ebgp-enforce-multihop</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 5)"><div class="topic-check"></div><span class="topic-text">Deploying BGP via FortiManager templates</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-5"></div></div>
+    </div>
+  </div>
+
+
+  </div><!-- end domain-cards d4 -->
+  </div><!-- end domain-section d4 -->
+
+  <!-- ════════════════════════════════════════════
+       DOMAIN 5 — VPN TECHNOLOGIES
+       Lessons: 7, 8
+       ════════════════════════════════════════════ -->
+  <div class="domain-section" data-domain="d5">
+  <div class="domain-header" onclick="toggleDomain(this.closest('.domain-section'))">
+    <div class="domain-num">DOMAIN 5</div>
+    <div class="domain-text">
+      <div class="domain-name">VPN Technologies</div>
+      <div class="domain-desc">IPsec IKEv2 site-to-site VPN design, certificate-based authentication, and ADVPN for dynamic on-demand spoke-to-spoke tunnels</div>
+    </div>
+    <div class="domain-progress">
+      <span class="domain-pct" id="dpct-d5">0%</span>
+      <span class="domain-pct-label">COMPLETE</span>
+    </div>
+    <div class="domain-chevron">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+  <div class="domain-cards">
+
+  <!-- L7 -->
+  <div class="lesson-card" data-lesson="7" data-domain="d5">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">07</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 7</div>
+        <div class="lesson-card-title">IPsec</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-7">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 7)"><div class="topic-check"></div><span class="topic-text">IPsec topologies: site-to-site, hub-spoke, dual hub, full mesh, ADVPN</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 7)"><div class="topic-check"></div><span class="topic-text">IKEv2 advantages: AES-GCM, EAP auth, stronger DH groups</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 7)"><div class="topic-check"></div><span class="topic-text">DH groups: MODP (14–18) vs ECP (19–20) — weak = groups 1, 2, 5</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 7)"><div class="topic-check"></div><span class="topic-text">PFS — Perfect Forward Secrecy in Phase 2</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 7)"><div class="topic-check"></div><span class="topic-text">DPD on-demand — unpredictable traffic</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 7)"><div class="topic-check"></div><span class="topic-text">DPD on-idle — regular/periodic traffic</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 7)"><div class="topic-check"></div><span class="topic-text">DPD disabled — stable networks, only replies to peer DPDs</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 7)"><div class="topic-check"></div><span class="topic-text">FortiManager IPsec templates — simplify large-scale VPN deployment</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-7"></div></div>
+    </div>
+  </div>
+
+  <!-- L8 -->
+  <div class="lesson-card" data-lesson="8" data-domain="d5">
+    <div class="lesson-card-header" onclick="toggleCard(this.closest('.lesson-card'))">
+      <div class="lesson-num">08</div>
+      <div class="lesson-card-title-wrap">
+        <div class="lesson-card-num-label">LESSON 8</div>
+        <div class="lesson-card-title">Auto-Discovery VPN</div>
+      </div>
+      <div class="lesson-card-mini-bar">
+        <span class="lesson-pct" id="pct-8">0%</span>
+        <span class="lesson-pct-label">DONE</span>
+      </div>
+      <div class="lesson-chevron">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <ul class="topic-list">
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 8)"><div class="topic-check"></div><span class="topic-text">ADVPN: hub-and-spoke management + full-mesh performance</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 8)"><div class="topic-check"></div><span class="topic-text">ADVPN requires IKEv2</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 8)"><div class="topic-check"></div><span class="topic-text">Hub phase 1: type dynamic, auto-discovery-sender enable</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 8)"><div class="topic-check"></div><span class="topic-text">Spoke phase 1: auto-discovery-receiver enable, net-device enable</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 8)"><div class="topic-check"></div><span class="topic-text">Dynamic routing on hub (not static) to learn spoke subnets</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 8)"><div class="topic-check"></div><span class="topic-text">FortiManager IPsec templates with ADVPN option + metadata vars</span></li>
+      <li class="topic-item" onclick="event.stopPropagation(); toggleTopic(this, 8)"><div class="topic-check"></div><span class="topic-text">Shortcut tunnels created automatically — hub redirects, spokes negotiate</span></li>
+    </ul>
+    <div class="lesson-card-footer">
+      <div class="lesson-track-wrap"><div class="lesson-track-fill" id="bar-8"></div></div>
+    </div>
+  </div>
+
+  </div><!-- end domain-cards d5 -->
+  </div><!-- end domain-section d5 -->
+
+</div><!-- end .bp-grid -->
+
+<footer>
+  <div class="footer-left">NSE7<span>.</span></div>
+  <div class="footer-right">Enterprise Firewall 7.6 · Topic Blueprint</div>
+</footer>
+
+<script>
+  /* domain → lesson mapping */
+  const DOMAIN_LESSONS = {
+    d1: [1, 3, 4, 9, 10],
+    d2: [2],
+    d3: [6],
+    d4: [5],
+    d5: [7, 8],
+  };
+
+  function setView(mode, btn) {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const grid  = document.querySelector('.bp-grid');
+    const cards = document.querySelectorAll('.lesson-card');
+    if (mode === 'lesson') {
+      grid.classList.add('view-lesson');
+      cards.forEach(c => c.style.order = parseInt(c.dataset.lesson));
+    } else {
+      grid.classList.remove('view-lesson');
+      cards.forEach(c => c.style.order = '');
+    }
+  }
+
+  function toggleDomain(section) {
+    section.classList.toggle('collapsed');
+  }
+
+  function toggleCard(card) {
+    card.classList.toggle('collapsed');
+  }
+
+  function toggleTopic(li, lesson) {
+    li.classList.toggle('done');
+    updateLesson(lesson);
+    const domain = document.querySelector(`.lesson-card[data-lesson="${lesson}"]`).dataset.domain;
+    updateDomain(domain);
+    updateGlobal();
+  }
+
+  function updateLesson(lesson) {
+    const card  = document.querySelector(`.lesson-card[data-lesson="${lesson}"]`);
+    const items = card.querySelectorAll('.topic-item');
+    const done  = card.querySelectorAll('.topic-item.done').length;
+    const pct   = items.length ? Math.round(done / items.length * 100) : 0;
+    document.getElementById(`pct-${lesson}`).textContent = pct + '%';
+    document.getElementById(`bar-${lesson}`).style.width = pct + '%';
+  }
+
+  function updateDomain(domainId) {
+    const lessons = DOMAIN_LESSONS[domainId];
+    let total = 0, done = 0;
+    lessons.forEach(l => {
+      const card = document.querySelector(`.lesson-card[data-lesson="${l}"]`);
+      if (!card) return;
+      total += card.querySelectorAll('.topic-item').length;
+      done  += card.querySelectorAll('.topic-item.done').length;
+    });
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById(`dpct-${domainId}`).textContent = pct + '%';
+  }
+
+  function updateGlobal() {
+    const allItems = document.querySelectorAll('.topic-item');
+    const allDone  = document.querySelectorAll('.topic-item.done').length;
+    const total    = allItems.length;
+    const pct      = total ? Math.round(allDone / total * 100) : 0;
+    document.getElementById('global-pct').textContent   = pct;
+    document.getElementById('global-done').textContent  = allDone;
+    document.getElementById('global-total').textContent = total;
+    document.getElementById('global-bar').style.width   = pct + '%';
+  }
+
+  /* initialise on load */
+  updateGlobal();
+</script>
+
+</body>
+</html>

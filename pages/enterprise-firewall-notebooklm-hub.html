@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — NotebookLM</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    padding: 40px 20px 80px;
+  }
+
+  .breadcrumb-wrap {
+    position: absolute;
+    top: 40px;
+    left: 60px;
+  }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .page-title .day-badge { display: inline-flex; margin-bottom: 14px; }
+  .page-title h1 { font-size: 48px; }
+  .page-title p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hub-card {
+    width: 300px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease,
+                border-color 0.3s ease;
+  }
+
+  /* shine sweep on hover */
+  .hub-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -80%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.22) 50%, transparent);
+    transform: skewX(-15deg);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .hub-card:hover::before { animation: card-shine 0.55s ease forwards; }
+  @keyframes card-shine { to { left: 160%; } }
+
+  /* per-card lift + colored glow + slight tilt */
+  .hub-card.type-deep:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1.5deg);
+    box-shadow: 0 32px 64px rgba(255,107,53,0.32), 0 0 0 2px var(--orange-border);
+    border-color: var(--orange-border);
+  }
+  .hub-card.type-debate:hover {
+    transform: translateY(-22px) scale(1.05) rotate(2deg);
+    box-shadow: 0 32px 64px rgba(92,53,204,0.32), 0 0 0 2px var(--purple-border);
+    border-color: var(--purple-border);
+  }
+  .hub-card.type-mini:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-2deg);
+    box-shadow: 0 32px 64px rgba(26,107,204,0.32), 0 0 0 2px var(--blue-border);
+    border-color: var(--blue-border);
+  }
+
+  /* image area intensifies */
+  .hub-card .card-img { transition: background 0.3s ease; }
+  .hub-card.type-deep:hover  .card-img { background: #ffd4b8; }
+  .hub-card.type-debate:hover .card-img { background: #d2c8f7; }
+  .hub-card.type-mini:hover   .card-img { background: #b8d5f5; }
+
+  /* arrow nudge */
+  .hub-card:hover .card-arrow svg {
+    animation: arrow-nudge 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  }
+  @keyframes arrow-nudge {
+    to { transform: translateX(5px); }
+  }
+
+  /* ── MIC ANIMATION ── */
+  .mic-group { transform-origin: 36px 40px; }
+  .hub-card.type-deep:hover .mic-group {
+    animation: mic-rock 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes mic-rock {
+    0%   { transform: rotate(0deg)   scale(1); }
+    22%  { transform: rotate(-20deg) scale(1.12); }
+    48%  { transform: rotate(13deg)  scale(1.10); }
+    70%  { transform: rotate(-6deg)  scale(1.11); }
+    100% { transform: rotate(0deg)   scale(1.1); }
+  }
+
+  /* ── BUBBLE ANIMATION ── */
+  .hub-card.type-debate:hover .bubble-a {
+    animation: bubble-drift-a 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .hub-card.type-debate:hover .bubble-b {
+    animation: bubble-drift-b 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.06s forwards;
+  }
+  @keyframes bubble-drift-a {
+    to { transform: translate(-6px, -6px) rotate(-5deg); }
+  }
+  @keyframes bubble-drift-b {
+    to { transform: translate(6px, 6px) rotate(5deg); }
+  }
+
+  /* ── WATCH HAND ANIMATION ── */
+  .watch-hands { transform-origin: 37px 42px; }
+  .hub-card.type-mini:hover .watch-hands {
+    animation: hand-spin 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  @keyframes hand-spin {
+    0%   { transform: rotate(0deg); }
+    60%  { transform: rotate(390deg); }
+    80%  { transform: rotate(355deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .card-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: var(--cream-dark);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .card-img svg { width: 72px; height: 72px; }
+  .hub-card.type-deep .card-img { background: var(--orange-light); border-color: var(--orange-border); }
+  .hub-card.type-debate .card-img { background: var(--purple-light); border-color: var(--purple-border); }
+  .hub-card.type-mini .card-img { background: var(--blue-light); border-color: var(--blue-border); }
+
+  .card-body {
+    padding: 20px 22px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--ink-muted);
+  }
+  .hub-card.type-deep .card-label { color: var(--orange); }
+  .hub-card.type-debate .card-label { color: var(--purple); }
+  .hub-card.type-mini .card-label { color: var(--blue); }
+
+  .card-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.65;
+    margin-top: 4px;
+  }
+  .card-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .card-pill {
+    font-size: 10px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+    background: var(--cream-dark);
+  }
+  .card-arrow {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .hub-card.type-deep .card-arrow { color: var(--orange); }
+  .hub-card.type-debate .card-arrow { color: var(--purple); }
+  .hub-card.type-mini .card-arrow { color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb-wrap">
+  <div class="breadcrumb">
+    <a href="../index.html">NSE7</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Enterprise Firewall 7.6</span>
+    <span class="breadcrumb-sep">/</span>
+    <span>NotebookLM</span>
+  </div>
+</div>
+
+<div class="page-title">
+  <div class="day-badge">
+    <span class="day-badge-dot"></span>
+    NOTEBOOKLM · AUDIO OVERVIEW PROMPTS
+  </div>
+  <h1>Pick your <em>format</em></h1>
+  <p>Three ways to turn your study materials into audio. Choose a format, copy a prompt, paste it into NotebookLM's Audio Overview field, and generate.</p>
+</div>
+
+<div class="card-row">
+
+  <!-- Deep Dives -->
+  <a class="hub-card type-deep" href="enterprise-firewall-notebooklm.html">
+    <div class="card-img">
+      <!-- microphone -->
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="mic-group">
+          <rect x="26" y="8" width="20" height="32" rx="10" fill="var(--orange)" fill-opacity="0.18" stroke="var(--orange)" stroke-width="2.5"/>
+          <line x1="36" y1="16" x2="36" y2="28" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+          <line x1="36" y1="33" x2="36" y2="35" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+          <path d="M18 36c0 9.9 8.1 18 18 18s18-8.1 18-18" stroke="var(--orange)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="36" y1="54" x2="36" y2="63" stroke="var(--orange)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="26" y1="63" x2="46" y2="63" stroke="var(--orange)" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">FULL EPISODES · 5 DOMAINS</div>
+      <div class="card-name">Domain Deep Dives</div>
+      <div class="card-desc">Story-driven, scenario-based prompts that cover an entire exam domain in one go — architects, outages, real deployments.</div>
+      <div class="card-meta">
+        <span class="card-pill">11 prompts</span>
+        <span class="card-pill">Long form</span>
+        <span class="card-pill">All domains</span>
+      </div>
+      <div class="card-arrow">
+        Open Deep Dives
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Debates -->
+  <a class="hub-card type-debate" href="enterprise-firewall-notebooklm-debates.html">
+    <div class="card-img">
+      <!-- two speech bubbles facing each other -->
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="bubble-a">
+          <rect x="6" y="10" width="34" height="22" rx="8" fill="var(--purple)" fill-opacity="0.18" stroke="var(--purple)" stroke-width="2.5"/>
+          <path d="M14 32l-6 7 10-4" fill="var(--purple)" fill-opacity="0.18" stroke="var(--purple)" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="14" y1="19" x2="30" y2="19" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+          <line x1="14" y1="25" x2="24" y2="25" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        </g>
+        <g class="bubble-b">
+          <rect x="32" y="40" width="34" height="22" rx="8" fill="var(--purple)" fill-opacity="0.10" stroke="var(--purple)" stroke-width="2.5"/>
+          <path d="M58 40l6-7-10 4" fill="var(--purple)" fill-opacity="0.10" stroke="var(--purple)" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="42" y1="49" x2="58" y2="49" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+          <line x1="48" y1="55" x2="58" y2="55" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">POINT-COUNTERPOINT · 5 DOMAINS</div>
+      <div class="card-name">Technical Debates</div>
+      <div class="card-desc">Hosts take opposing sides on the real design choices — A/A vs A/P, full SSL inspection vs not, ADVPN vs hub-spoke.</div>
+      <div class="card-meta">
+        <span class="card-pill">8 debates</span>
+        <span class="card-pill">Two sides</span>
+        <span class="card-pill">Exam traps</span>
+      </div>
+      <div class="card-arrow">
+        Open Debates
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Mini Episodes -->
+  <a class="hub-card type-mini" href="enterprise-firewall-notebooklm-mini.html">
+    <div class="card-img">
+      <!-- stopwatch / timer -->
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="37" cy="42" r="22" fill="var(--blue)" fill-opacity="0.12" stroke="var(--blue)" stroke-width="2.5"/>
+        <circle cx="37" cy="42" r="2.5" fill="var(--blue)"/>
+        <g class="watch-hands">
+          <line x1="37" y1="42" x2="37" y2="27" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="37" y1="42" x2="48" y2="49" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+        </g>
+        <line x1="30" y1="8" x2="44" y2="8" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="37" y1="8" x2="37" y2="18" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="57" y1="22" x2="61" y2="18" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">5-MINUTE DRILLS · SUB-TOPICS</div>
+      <div class="card-name">Mini Episodes</div>
+      <div class="card-desc">Tight, focused prompts on single concepts — the HA election algorithm, TLS handshake, OSPF area types, DPD modes.</div>
+      <div class="card-meta">
+        <span class="card-pill">12 prompts</span>
+        <span class="card-pill">5 min each</span>
+        <span class="card-pill">Exam traps</span>
+      </div>
+      <div class="card-arrow">
+        Open Mini Episodes
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+  <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · NotebookLM</div>
+</footer>
+
+</body>
+</html>

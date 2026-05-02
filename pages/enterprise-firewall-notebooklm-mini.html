@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — NotebookLM Mini Episodes</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  body { background: var(--cream); }
+
+  .nlm-header {
+    padding: 40px 60px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--cream);
+  }
+  .nlm-header h1 { margin-top: 14px; }
+  .nlm-header-meta {
+    font-size: 13px; color: var(--ink-muted);
+    margin-top: 10px; line-height: 1.6; max-width: 620px;
+  }
+
+  .how-to-banner {
+    margin: 32px 60px 0;
+    background: var(--blue-light);
+    border: 1px solid var(--blue-border);
+    border-radius: 16px;
+    padding: 18px 24px;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .how-to-icon {
+    width: 36px; height: 36px; background: var(--blue);
+    border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; color: white; font-size: 16px;
+  }
+  .how-to-body { flex: 1; }
+  .how-to-title { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--blue); margin-bottom: 4px; }
+  .how-to-text { font-size: 12px; color: var(--ink-soft); line-height: 1.7; }
+
+  .nlm-body {
+    padding: 40px 60px 80px;
+    max-width: 1200px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 48px;
+  }
+
+  .domain-block { display: flex; flex-direction: column; gap: 16px; }
+  .domain-label-row {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .domain-num-badge {
+    background: var(--ink); color: var(--cream);
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    padding: 4px 12px; border-radius: 20px; flex-shrink: 0;
+  }
+  .domain-label-text { flex: 1; }
+  .domain-label-name { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+  .domain-label-desc { font-size: 12px; color: var(--ink-muted); margin-top: 3px; line-height: 1.5; }
+  .domain-prompt-count { font-size: 11px; color: var(--ink-muted); letter-spacing: 0.08em; flex-shrink: 0; }
+
+  .prompts-grid {
+    display: flex; flex-wrap: nowrap; gap: 16px; align-items: flex-start;
+  }
+
+  .prompt-card {
+    flex: 1; min-width: 0;
+    background: var(--cream); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: box-shadow 0.2s ease;
+  }
+  .prompt-card:hover { box-shadow: 0 8px 28px rgba(26,18,9,0.09); }
+
+  .prompt-card-head {
+    padding: 16px 18px 14px;
+    background: var(--cream-dark);
+    display: flex; align-items: flex-start; gap: 10px;
+    cursor: pointer; user-select: none;
+  }
+  .prompt-card.expanded .prompt-card-head { border-bottom: 1px solid var(--border); }
+
+  .duration-badge {
+    background: var(--blue); color: white;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+    padding: 3px 8px; border-radius: 20px; flex-shrink: 0; margin-top: 1px;
+    white-space: nowrap;
+  }
+  .prompt-head-text { flex: 1; min-width: 0; }
+  .prompt-episode { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--blue); margin-bottom: 3px; }
+  .prompt-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.25; }
+  .prompt-hook {
+    font-size: 11px; color: var(--ink-muted); margin-top: 5px; line-height: 1.5; font-style: italic;
+  }
+  .prompt-chevron {
+    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: var(--ink-muted); margin-top: 2px; transition: transform 0.25s ease;
+  }
+  .prompt-card.expanded .prompt-chevron { transform: rotate(180deg); }
+
+  .prompt-body {
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+  .prompt-card.expanded .prompt-body { grid-template-rows: 1fr; }
+  .prompt-body-inner {
+    overflow: hidden; padding: 0 18px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .prompt-card.expanded .prompt-body-inner { padding: 14px 18px; }
+
+  .key-concepts {
+    display: flex; gap: 5px; flex-wrap: wrap;
+  }
+  .concept-pill {
+    font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+    padding: 2px 8px; border-radius: 20px;
+    background: var(--blue-light); border: 1px solid var(--blue-border); color: var(--blue);
+  }
+
+  .prompt-text {
+    font-size: 12.5px; color: var(--ink-soft); line-height: 1.75;
+    background: var(--cream-dark); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px 12px 34px; font-style: italic;
+    position: relative;
+  }
+  .prompt-text::before {
+    content: '"'; font-family: 'Fraunces', serif; font-size: 42px;
+    color: var(--border); position: absolute; top: -4px; left: 8px; line-height: 1;
+  }
+
+  .prompt-footer {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  .exam-tag {
+    font-size: 10px; letter-spacing: 0.08em; padding: 3px 9px;
+    border-radius: 20px; background: var(--orange-light);
+    border: 1px solid var(--orange-border); color: var(--orange);
+  }
+  .copy-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--blue); background: none; border: 1px solid var(--blue-border);
+    border-radius: 8px; padding: 5px 11px; cursor: pointer;
+    transition: background 0.15s ease; flex-shrink: 0;
+  }
+  .copy-btn:hover { background: var(--blue-light); }
+  .copy-btn.copied { background: var(--green-light); border-color: var(--green-border); color: var(--green); }
+
+  @media (max-width: 900px) {
+    .nlm-header { padding: 24px 20px; }
+    .how-to-banner { margin: 20px 20px 0; }
+    .nlm-body { padding: 28px 20px 60px; }
+    .prompts-grid { flex-wrap: wrap; }
+    .prompt-card { flex: 1 1 260px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nlm-header">
+  <div class="breadcrumb">
+    <a href="../index.html">NSE7</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Enterprise Firewall 7.6</span>
+    <span class="breadcrumb-sep">/</span>
+    <a href="enterprise-firewall-notebooklm-hub.html">NotebookLM</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Mini Episodes</span>
+  </div>
+  <div class="day-badge" style="margin-top:14px;">
+    <span class="day-badge-dot"></span>
+    NOTEBOOKLM · 5-MINUTE DRILLS
+  </div>
+  <h1>Mini <em>Episodes</em></h1>
+  <p class="nlm-header-meta">One concept, five minutes. Each prompt is scoped to a single sub-topic — no tangents, no broad overviews. Ideal for filling gaps right before the exam.</p>
+</div>
+
+<div class="how-to-banner">
+  <div class="how-to-icon">⚡</div>
+  <div class="how-to-body">
+    <div class="how-to-title">SCOPED FOR SPEED</div>
+    <div class="how-to-text">These prompts explicitly instruct the hosts to stay tight — no warm-up, no recap, just the concept. The "hook" line under each title tells you the one thing you'll lock in after listening.</div>
+  </div>
+</div>
+
+<div class="nlm-body">
+
+  <!-- DOMAIN 1 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 1</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">System Configuration &amp; Security Fabric</div>
+        <div class="domain-label-desc">HA election, VDOMs, hardware chips</div>
+      </div>
+      <div class="domain-prompt-count">3 MINI EPISODES</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 1</div>
+            <div class="prompt-title">The HA Primary Election Algorithm</div>
+            <div class="prompt-hook">After this: you'll recite the election order in your sleep — with and without override.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">Ports Monitored</span>
+            <span class="concept-pill">Uptime</span>
+            <span class="concept-pill">Priority</span>
+            <span class="concept-pill">Serial Number</span>
+            <span class="concept-pill">Override ON/OFF</span>
+          </div>
+          <div class="prompt-text" id="mini-d1a">This is a tight 5-minute micro-episode — no warm-up, no broad context, just this one algorithm. Two hosts walk through exactly how FortiGate FGCP primary election works the moment both units come online. Step 1: who has more monitored ports up? Step 2 (tie): who has been up longer? Step 3 (tie): who has the higher configured priority? Step 4 (tie): who has the higher serial number? Now flip it — with override enabled, uptime drops to step 3 and priority jumps to step 2. Explain why that flip exists: override lets an admin guarantee which unit is primary after a planned reboot. End with the single CLI command that resets uptime to force a new election, and the one scenario where running it at the wrong time would cause an outage. Use a bracket tournament analogy to make the tiebreaker sequence stick.</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d1a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 1</div>
+            <div class="prompt-title">VDOM Types and Inter-VDOM Links</div>
+            <div class="prompt-hook">After this: you'll know why inter-VDOM links always come in pairs and why you still need both routes and policies.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">4 VDOM Types</span>
+            <span class="concept-pill">Inter-VDOM Links</span>
+            <span class="concept-pill">0/1 Suffix Pairs</span>
+            <span class="concept-pill">Routes + Policies</span>
+          </div>
+          <div class="prompt-text" id="mini-d1b">Tight 5-minute drill — no detours. Two hosts cover the four VDOM types: Admin VDOM (management only), Traffic NAT VDOM (standard L3 routing with NAT), Traffic Transparent VDOM (no IP on interfaces, bridges at L2), and LAN Extension VDOM (SD-WAN extension mode). Then the piece most people get wrong: inter-VDOM links. Explain why they always come in pairs with 0 and 1 suffixes — one end in each VDOM. The trap: just creating the link doesn't make traffic flow. You need routes in both VDOMs pointing to the remote VDOM's subnets, and you need firewall policies on both ends. Use the hotel-floor analogy — two floors of the same building can only share a corridor if both floors have a door and both front desks allow the visitor. End with one exam question trap: what happens to inter-VDOM link traffic when the policy is missing on one side?</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d1b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 1</div>
+            <div class="prompt-title">NP vs CP vs SOC — What Each Chip Actually Does</div>
+            <div class="prompt-hook">After this: you'll never confuse NP7 (network processor) with CP9 (content processor) again.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">NP7</span>
+            <span class="concept-pill">CP9</span>
+            <span class="concept-pill">SOC5</span>
+            <span class="concept-pill">NP Direct</span>
+            <span class="concept-pill">Offload Conditions</span>
+          </div>
+          <div class="prompt-text" id="mini-d1c">Five minutes, one topic: FortiGate SPU chips. No model specs, just the architecture. NP (Network Processor) handles L3/L4 forwarding at line rate — it sees packet headers, not content. CP (Content Processor) handles computationally expensive content tasks: SSL handshake offload, IPS pattern matching, AV scanning. SOC chips combine both into a single die for lower-end models. Now the NP Direct architecture: explain why traffic between two ports on the same NP chip bypasses the CPU entirely, and why that same-NP-port requirement matters for high-throughput deployments. Walk through the exact conditions that prevent offload — what traffic types cannot be offloaded to NP and must go through the main CPU. Use CLI commands to identify which chip a FortiGate has. End with the one exam trap: SSL inspection always requires the CP processor, not NP, which is why enabling full inspection reduces NP throughput gains.</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: Medium</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d1c', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOMAIN 2 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 2</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Central Management</div>
+        <div class="domain-label-desc">FortiManager install operations, dynamic objects</div>
+      </div>
+      <div class="domain-prompt-count">2 MINI EPISODES</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 2</div>
+            <div class="prompt-title">The 5 FortiManager Install Operations</div>
+            <div class="prompt-hook">After this: you'll know which drawer each operation reads from and writes to — without hesitation.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">Retrieve</span>
+            <span class="concept-pill">Import</span>
+            <span class="concept-pill">Install</span>
+            <span class="concept-pill">Quick Install</span>
+            <span class="concept-pill">Reinstall</span>
+          </div>
+          <div class="prompt-text" id="mini-d2a">Tight drill — five operations, five minutes. Use a filing-cabinet analogy throughout: FortiManager's internal database is one drawer, the device's running config is another, and the policy package is a third. Retrieve: pulls the running config from the device into the FortiManager database — the device is the source of truth, FortiManager is overwritten. Import: pulls policy and objects from the device's running config into a policy package — used once, when first adopting a device. Install: pushes the policy package from FortiManager down to the device — FortiManager is now the source of truth. Quick Install: pushes only device-level settings (no policy package) — useful for interface-level changes. Reinstall: reinstalls the last deployed policy package without changes — recovery operation. End with the one exam question trap: which operation does NOT touch the policy package at all?</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d2a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 2</div>
+            <div class="prompt-title">Dynamic Objects and Metadata Variables</div>
+            <div class="prompt-hook">After this: you'll understand how one policy can deploy correctly to 200 branches with different IP schemes.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">Dynamic Objects</span>
+            <span class="concept-pill">$variable Syntax</span>
+            <span class="concept-pill">Per-Device Mapping</span>
+            <span class="concept-pill">Normalized Interfaces</span>
+          </div>
+          <div class="prompt-text" id="mini-d2b">Five minutes on the FortiManager feature that makes scale possible. The problem: you have 200 branches, each with a different LAN subnet and a different WAN interface name. A single policy package can't hardcode those values. The solution: dynamic objects. Explain how a dynamic object is a placeholder in the policy — it looks like a normal address object, but its value is resolved per-device at install time using a per-device mapping. Then metadata variables: the dollar-sign variable syntax ($LAN_SUBNET, $WAN_INTERFACE) that appears in CLI templates and gets substituted with per-device values at push time. Explain normalised interfaces — how FortiManager maps a logical interface name like "WAN" to port2 on one device and port1 on another. Walk through the exact install-time resolution sequence. End with the one thing that breaks everything: forgetting to set the per-device mapping before pushing a template with unresolved variables.</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d2b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOMAIN 3 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 3</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Security Profiles</div>
+        <div class="domain-label-desc">TLS handshake, ISDB vs App Control, IPS signature model</div>
+      </div>
+      <div class="domain-prompt-count">3 MINI EPISODES</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 3</div>
+            <div class="prompt-title">The TLS Handshake, Step by Step</div>
+            <div class="prompt-hook">After this: you'll trace a TLS 1.2 handshake packet-by-packet and explain why TLS 1.3 is shorter.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">Client Hello</span>
+            <span class="concept-pill">Server Hello</span>
+            <span class="concept-pill">Key Exchange</span>
+            <span class="concept-pill">TLS 1.2 vs 1.3</span>
+            <span class="concept-pill">Cipher Suite Format</span>
+          </div>
+          <div class="prompt-text" id="mini-d3a">Five-minute drill: the TLS handshake as a back-and-forth conversation. Walk through TLS 1.2 step by step — Client Hello (I support these cipher suites and TLS versions), Server Hello (I pick this cipher suite), Certificate (here's my identity, verify me), Server Key Exchange (here's my DH public value), Client Key Exchange (here's mine, now we both derive the same session key), Finished (encrypted, proves the handshake wasn't tampered with). Contrast with TLS 1.3's 1-RTT handshake — the client guesses the key exchange algorithm upfront, so the handshake is one round trip shorter. Then decode a cipher suite string: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 — explain each segment (key exchange, authentication, bulk cipher, MAC). End with the FortiGate exam trap: TLS 1.0 and 1.1 are disabled by default in FortiOS 7.x — what does that break in legacy environments?</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d3a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 3</div>
+            <div class="prompt-title">ISDB vs Application Control — Know the Difference</div>
+            <div class="prompt-hook">After this: you'll know exactly which inspection layer each uses and why ISDB appears in SD-WAN rules but App Control doesn't.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">ISDB L3/L4</span>
+            <span class="concept-pill">App Control L7</span>
+            <span class="concept-pill">DPI Signatures</span>
+            <span class="concept-pill">SD-WAN Rules</span>
+          </div>
+          <div class="prompt-text" id="mini-d3b">Five-minute concept clarifier — this confusion costs exam marks. ISDB (Internet Service Database) is a Fortinet-maintained database of IP addresses and port ranges belonging to known services (Microsoft 365, AWS, Zoom). It operates at L3 and L4 only — no deep packet inspection, no SSL decryption required. Application Control uses DPI signatures to identify what an application is actually doing at L7 — it needs to see inside the packet, which means SSL inspection must be enabled for encrypted traffic. Use the analogy: ISDB is a bouncer with a list of approved addresses (no ID needed, just your ZIP code). App Control is a detective who watches what you do inside the venue. Now the key exam point: SD-WAN rules can use ISDB to steer traffic without requiring SSL inspection — that's why it's used for cloud app steering. App Control cannot be used directly in SD-WAN rules. Walk through one scenario where you'd use each and one where you'd use both together.</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d3b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 3</div>
+            <div class="prompt-title">IPS Profile Construction</div>
+            <div class="prompt-hook">After this: you'll build an IPS profile from scratch and explain every field without looking it up.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">Filter vs Signature</span>
+            <span class="concept-pill">Target: Client/Server</span>
+            <span class="concept-pill">Severity Levels</span>
+            <span class="concept-pill">Action Options</span>
+          </div>
+          <div class="prompt-text" id="mini-d3c">Five minutes — build an IPS profile field by field. Start with the two ways to add signatures to a profile: by filter (select all signatures matching a category, OS, severity, or target) versus individual signature (explicitly named signatures by ID). Explain severity levels from critical down to informational and why you'd typically start blocking at high-and-above. Target field: client means the signature detects attacks against clients (browser exploits, drive-bys), server means attacks against servers (web app exploits, database attacks) — choosing the right target cuts false positives dramatically. Action per entry: monitor (log only), block (drop packet, log), reset (send TCP RST, log), quarantine (block source IP for a defined period). Walk through the right action for each severity tier. End with the hping3 validation test: what command would you run, what signature should fire, and what log entry proves IPS is working correctly?</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: Medium</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d3c', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOMAIN 4 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 4</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">Routing</div>
+        <div class="domain-label-desc">OSPF area types, BGP path selection</div>
+      </div>
+      <div class="domain-prompt-count">2 MINI EPISODES</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 4</div>
+            <div class="prompt-title">OSPF Router Types — ABR vs ASBR</div>
+            <div class="prompt-hook">After this: you'll instantly identify what role each router plays just from its position in the network diagram.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">Area 0 Backbone</span>
+            <span class="concept-pill">ABR</span>
+            <span class="concept-pill">ASBR</span>
+            <span class="concept-pill">Redistribution OFF</span>
+          </div>
+          <div class="prompt-text" id="mini-d4a">Five-minute drill: OSPF topology roles. Area 0 is the backbone every other OSPF area must connect through — it's the superhighway that all inter-area traffic crosses. An ABR (Area Border Router) sits with one interface in Area 0 and another in a non-backbone area — it's the on-ramp. It summarises LSAs between areas and can aggregate routes (route summarisation happens here). An ASBR (Autonomous System Boundary Router) imports external routes from outside OSPF — a BGP neighbour, a static route, a connected network — into the OSPF domain. One router can be both an ABR and ASBR simultaneously. Walk through what happens to a packet traversing from Area 2 to Area 3 — it must cross Area 0, so the path is: Area 2 router → ABR → Area 0 → ABR → Area 3 router. End with the exam trap: redistribution into OSPF is disabled by default in FortiOS — what's the CLI to enable it, and what cost does a redistributed external route receive?</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d4a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 4</div>
+            <div class="prompt-title">BGP Path Selection and AS Path Manipulation</div>
+            <div class="prompt-hook">After this: you'll explain why the same prefix from two ISPs takes one path over the other — and how to change it.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">Local Preference</span>
+            <span class="concept-pill">AS Path Length</span>
+            <span class="concept-pill">Origin</span>
+            <span class="concept-pill">MED</span>
+            <span class="concept-pill">AS Path Prepending</span>
+          </div>
+          <div class="prompt-text" id="mini-d4b">Five minutes — BGP path selection attributes in priority order. Local Preference (highest wins, influences outbound traffic, stays within an AS — like an internal preference score). AS Path Length (shortest wins — fewer hops through other autonomous systems is preferred). Origin (IGP beats EGP beats incomplete — how the route was originally injected). MED (lowest wins, sent to a neighbour to influence inbound traffic — like a suggested on-ramp priority). Walk through a concrete scenario: two EBGP paths to the same prefix, one via ISP-A (2-hop AS path) and one via ISP-B (3-hop AS path) — which wins and why? Then AS Path Prepending: explain how you artificially lengthen your own AS path when advertising to ISP-B to make ISP-A the preferred inbound path. End with the ECMP case in FortiOS: what must be true for BGP to install multiple paths and what CLI enables it?</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d4b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOMAIN 5 -->
+  <div class="domain-block">
+    <div class="domain-label-row">
+      <div class="domain-num-badge">DOMAIN 5</div>
+      <div class="domain-label-text">
+        <div class="domain-label-name">VPN Technologies</div>
+        <div class="domain-label-desc">DPD modes, IKEv2 vs IKEv1, ADVPN signalling</div>
+      </div>
+      <div class="domain-prompt-count">2 MINI EPISODES</div>
+    </div>
+    <div class="prompts-grid">
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 5</div>
+            <div class="prompt-title">Dead Peer Detection — Three Modes, Three Scenarios</div>
+            <div class="prompt-hook">After this: you'll match on-demand, on-idle, and disabled to their correct use cases without second-guessing.</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">DPD On-Demand</span>
+            <span class="concept-pill">DPD On-Idle</span>
+            <span class="concept-pill">DPD Disabled</span>
+            <span class="concept-pill">Phase 1 Keepalive</span>
+          </div>
+          <div class="prompt-text" id="mini-d5a">Five-minute drill — DPD modes with zero fluff. DPD is the IPsec mechanism that detects whether the remote peer is still alive so dead tunnels are cleared. On-demand: FortiGate only sends DPD probes when it has traffic to send but hasn't heard from the peer — the probe is triggered by outbound traffic. Best for unpredictable, bursty traffic patterns where the tunnel may be silent for long periods. On-idle: probes are sent on a regular timer regardless of traffic — best for links with regular traffic where a silent failure would go undetected. Disabled: FortiGate never initiates DPD but will respond to the peer's probes — best for stable, directly connected point-to-point links where both ends are always reachable. Use the office analogy: on-demand is messaging a colleague only when you need something. On-idle is a scheduled daily check-in call. Disabled is leaving your door open and trusting they'll knock if they need you. End with the exam trap: which DPD mode risks leaving a stale Phase 2 SA in place longest after a peer failure?</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d5a', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head" onclick="togglePrompt(this.closest('.prompt-card'))">
+          <div class="duration-badge">5 MIN</div>
+          <div class="prompt-head-text">
+            <div class="prompt-episode">MINI · DOMAIN 5</div>
+            <div class="prompt-title">ADVPN Shortcut Tunnel Negotiation Flow</div>
+            <div class="prompt-hook">After this: you'll trace every step from "Spoke A wants to reach Spoke B" to "shortcut tunnel is up."</div>
+          </div>
+          <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="prompt-body"><div class="prompt-body-inner">
+          <div class="key-concepts">
+            <span class="concept-pill">Hair-Pin Traffic</span>
+            <span class="concept-pill">Shortcut Offer</span>
+            <span class="concept-pill">IKEv2 Direct</span>
+            <span class="concept-pill">auto-discovery-sender</span>
+            <span class="concept-pill">net-device enable</span>
+          </div>
+          <div class="prompt-text" id="mini-d5b">Five minutes — trace the ADVPN shortcut tunnel packet flow step by step with no detours. Step 1: Spoke A sends traffic to Spoke B's subnet. No shortcut exists yet, so the packet goes via the hub — hair-pinned through the hub's tunnel to Spoke B. Step 2: the hub detects cross-spoke traffic and sends a shortcut offer to both Spoke A and Spoke B. This is the auto-discovery-sender role — the hub is the matchmaker. Step 3: Spoke B receives the shortcut offer containing Spoke A's public IP. Step 4: Spoke A and Spoke B initiate a direct IKEv2 negotiation to each other — this requires net-device enable on the spoke so the FortiGate creates a virtual interface for the shortcut. Step 5: shortcut Phase 1 and Phase 2 complete. Step 6: subsequent traffic from Spoke A to Spoke B takes the shortcut directly, bypassing the hub. End with the exam trap: why does static routing on the hub break ADVPN, and what does dynamic routing actually need to learn?</div>
+          <div class="prompt-footer">
+            <span class="exam-tag">Exam Weight: High</span>
+            <button class="copy-btn" onclick="copyPrompt('mini-d5b', this)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+  <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · NotebookLM Mini Episodes</div>
+</footer>
+
+<script>
+  function togglePrompt(card) { card.classList.toggle('expanded'); }
+  function copyPrompt(id, btn) {
+    btn.closest('.prompt-card').classList.add('expanded');
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Copy`;
+      }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
