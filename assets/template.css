@@ -32,6 +32,9 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* hide body before pt overlay is ready (prevents transition blink) */
+html.pt-init body { opacity: 0; }
+
 body { font-family: 'Epilogue', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
 
 /* ── HEADER ── */

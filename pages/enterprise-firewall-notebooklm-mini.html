@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Enterprise Firewall 7.6 — NotebookLM Mini Episodes</title>
@@ -59,16 +59,29 @@
   .domain-prompt-count { font-size: 11px; color: var(--ink-muted); letter-spacing: 0.08em; flex-shrink: 0; }
 
   .prompts-grid {
-    display: flex; flex-wrap: nowrap; gap: 16px; align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .prompt-card {
-    flex: 1; min-width: 0;
     background: var(--cream); border: 1px solid var(--border);
     border-radius: 16px; overflow: hidden;
-    display: flex; flex-direction: column;
+    display: flex; flex-direction: row; align-items: stretch;
     transition: box-shadow 0.2s ease;
   }
+
+  /* ── IMAGE PLACEHOLDER ── */
+  .card-image {
+    width: 172px; flex-shrink: 0;
+    border-right: 1px solid var(--blue-border);
+    background: var(--blue-light);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px; padding: 18px 14px; text-align: center;
+  }
+  .card-image svg { max-width: 100%; height: auto; }
+  .card-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .prompt-card:hover { box-shadow: 0 8px 28px rgba(26,18,9,0.09); }
 
   .prompt-card-head {
@@ -146,12 +159,49 @@
   .copy-btn:hover { background: var(--blue-light); }
   .copy-btn.copied { background: var(--green-light); border-color: var(--green-border); color: var(--green); }
 
+  /* ── CHECKBOXES ── */
+  .check-group { display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+  .check-wrap { display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
+  .check-wrap input[type="checkbox"] { display: none; }
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border); border-radius: 4px;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+  }
+  .check-wrap:hover .check-box { transform: scale(1.1); }
+  .check-label { font-size: 10px; font-weight: 600; letter-spacing: 0.09em; color: var(--ink-muted); text-transform: uppercase; transition: color 0.15s ease; }
+  .check-wrap:hover .check-box--green { border-color: var(--green); }
+  .generated-check:checked + .check-box--green { background: var(--green); border-color: var(--green); }
+  .generated-check:checked + .check-box--green::after { content: ''; display: block; width: 3px; height: 7px; border: 1.5px solid white; border-top: none; border-left: none; transform: rotate(45deg) translate(0,-1px); }
+  .generated-check:checked ~ .check-label { color: var(--green); }
+  .check-wrap:hover .check-box--blue { border-color: var(--blue); }
+  .completed-check:checked + .check-box--blue { background: var(--blue); border-color: var(--blue); }
+  .completed-check:checked + .check-box--blue::after { content: ''; display: block; width: 3px; height: 7px; border: 1.5px solid white; border-top: none; border-left: none; transform: rotate(45deg) translate(0,-1px); }
+  .completed-check:checked ~ .check-label { color: var(--blue); }
+  .check-wrap:hover .check-box--amber { border-color: #a07c00; }
+  .renamed-check:checked + .check-box--amber { background: #a07c00; border-color: #a07c00; }
+  .renamed-check:checked + .check-box--amber::after { content: ''; display: block; width: 3px; height: 7px; border: 1.5px solid white; border-top: none; border-left: none; transform: rotate(45deg) translate(0,-1px); }
+  .renamed-check:checked ~ .check-label { color: #a07c00; }
+  .prompt-card.generated .prompt-card-head { background: var(--green-light); }
+  .prompt-card.generated.expanded .prompt-card-head { border-bottom-color: var(--green-border); }
+  .prompt-card.generated .prompt-episode { color: var(--green); }
+  .prompt-card.generated .prompt-episode::before { content: '✓  '; font-weight: 700; }
+  .prompt-card.completed .prompt-card-head { background: var(--blue-light); }
+  .prompt-card.completed.expanded .prompt-card-head { border-bottom-color: var(--blue-border); }
+  .prompt-card.completed .prompt-episode { color: var(--blue); }
+  .prompt-card.completed .prompt-episode::before { content: '✓  '; font-weight: 700; }
+  .prompt-card.generated.completed .prompt-card-head { background: var(--blue-light); }
+  .prompt-card.generated.completed .prompt-episode { color: var(--blue); }
+
   @media (max-width: 900px) {
     .nlm-header { padding: 24px 20px; }
     .how-to-banner { margin: 20px 20px 0; }
     .nlm-body { padding: 28px 20px 60px; }
-    .prompts-grid { flex-wrap: wrap; }
-    .prompt-card { flex: 1 1 260px; }
+    .prompt-card { flex-direction: column; }
+    .card-image { width: 100%; border-right: none; border-bottom: 1px solid var(--blue-border); flex-direction: row; justify-content: flex-start; padding: 12px 16px; gap: 12px; }
+    .card-image-text { text-align: left; }
   }
 </style>
 </head>
@@ -205,6 +255,11 @@
             <div class="prompt-title">The HA Primary Election Algorithm</div>
             <div class="prompt-hook">After this: you'll recite the election order in your sleep — with and without override.</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -234,6 +289,11 @@
             <div class="prompt-title">VDOM Types and Inter-VDOM Links</div>
             <div class="prompt-hook">After this: you'll know why inter-VDOM links always come in pairs and why you still need both routes and policies.</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -261,6 +321,11 @@
             <div class="prompt-episode">MINI · DOMAIN 1</div>
             <div class="prompt-title">NP vs CP vs SOC — What Each Chip Actually Does</div>
             <div class="prompt-hook">After this: you'll never confuse NP7 (network processor) with CP9 (content processor) again.</div>
+          </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
           </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
@@ -306,6 +371,11 @@
             <div class="prompt-title">The 5 FortiManager Install Operations</div>
             <div class="prompt-hook">After this: you'll know which drawer each operation reads from and writes to — without hesitation.</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -334,6 +404,11 @@
             <div class="prompt-episode">MINI · DOMAIN 2</div>
             <div class="prompt-title">Dynamic Objects and Metadata Variables</div>
             <div class="prompt-hook">After this: you'll understand how one policy can deploy correctly to 200 branches with different IP schemes.</div>
+          </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
           </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
@@ -378,6 +453,11 @@
             <div class="prompt-title">The TLS Handshake, Step by Step</div>
             <div class="prompt-hook">After this: you'll trace a TLS 1.2 handshake packet-by-packet and explain why TLS 1.3 is shorter.</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -407,6 +487,11 @@
             <div class="prompt-title">ISDB vs Application Control — Know the Difference</div>
             <div class="prompt-hook">After this: you'll know exactly which inspection layer each uses and why ISDB appears in SD-WAN rules but App Control doesn't.</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -434,6 +519,11 @@
             <div class="prompt-episode">MINI · DOMAIN 3</div>
             <div class="prompt-title">IPS Profile Construction</div>
             <div class="prompt-hook">After this: you'll build an IPS profile from scratch and explain every field without looking it up.</div>
+          </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
           </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
@@ -478,6 +568,11 @@
             <div class="prompt-title">OSPF Router Types — ABR vs ASBR</div>
             <div class="prompt-hook">After this: you'll instantly identify what role each router plays just from its position in the network diagram.</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -505,6 +600,11 @@
             <div class="prompt-episode">MINI · DOMAIN 4</div>
             <div class="prompt-title">BGP Path Selection and AS Path Manipulation</div>
             <div class="prompt-hook">After this: you'll explain why the same prefix from two ISPs takes one path over the other — and how to change it.</div>
+          </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
           </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
@@ -550,6 +650,11 @@
             <div class="prompt-title">Dead Peer Detection — Three Modes, Three Scenarios</div>
             <div class="prompt-hook">After this: you'll match on-demand, on-idle, and disabled to their correct use cases without second-guessing.</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -577,6 +682,11 @@
             <div class="prompt-episode">MINI · DOMAIN 5</div>
             <div class="prompt-title">ADVPN Shortcut Tunnel Negotiation Flow</div>
             <div class="prompt-hook">After this: you'll trace every step from "Spoke A wants to reach Spoke B" to "shortcut tunnel is up."</div>
+          </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
           </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
@@ -606,11 +716,246 @@
 
 <footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
   <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <span style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--ink-muted);">Five minutes of focused audio beats an hour of passive reading.</span>
   <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · NotebookLM Mini Episodes</div>
 </footer>
 
 <script>
+  const CARD_SVGS = {
+    'mini-d1a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4"  y="4"  width="18" height="12" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="32" y="4"  width="18" height="12" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="60" y="4"  width="18" height="12" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="4"  y="4"  width="18" height="12" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="32" y="4"  width="18" height="12" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="22" y1="10" x2="32" y2="10" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="50" y1="10" x2="60" y2="10" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="35" y1="16" x2="35" y2="26" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="69" y1="16" x2="55" y2="26" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="24" y="26" width="22" height="12" rx="2" fill="#1a6bcc" fill-opacity="0.2" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="35" y1="38" x2="35" y2="48" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="24" y="48" width="22" height="12" rx="2" fill="#1a6bcc" fill-opacity="0.45" stroke="#1a6bcc" stroke-width="2"/>
+      <circle cx="35" cy="54" r="3" fill="#1a6bcc"/>
+    </svg>`,
+    'mini-d1b': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="16" y="4" width="56" height="62" rx="4" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="2"/>
+      <line x1="16" y1="18" x2="72" y2="18" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="16" y1="32" x2="72" y2="32" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="16" y1="46" x2="72" y2="46" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="16" y1="58" x2="72" y2="58" stroke="#1a6bcc" stroke-width="1" opacity="0.4"/>
+      <rect x="24" y="20" width="14" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.3"/>
+      <rect x="42" y="20" width="22" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.15"/>
+      <rect x="24" y="34" width="22" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.3"/>
+      <rect x="50" y="34" width="14" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.15"/>
+      <rect x="24" y="48" width="10" height="8"  rx="2" fill="#1a6bcc" fill-opacity="0.3"/>
+      <rect x="38" y="48" width="26" height="8"  rx="2" fill="#1a6bcc" fill-opacity="0.15"/>
+      <rect x="2"  y="10" width="8"  height="4"  rx="1" fill="#1a6bcc" fill-opacity="0.3"/>
+      <rect x="2"  y="24" width="8"  height="4"  rx="1" fill="#1a6bcc" fill-opacity="0.3"/>
+      <rect x="2"  y="38" width="8"  height="4"  rx="1" fill="#1a6bcc" fill-opacity="0.3"/>
+    </svg>`,
+    'mini-d1c': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4"  y="18" width="22" height="34" rx="3" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="6"  y="22" width="18" height="3" rx="1" fill="#1a6bcc" fill-opacity="0.4"/>
+      <rect x="6"  y="27" width="14" height="3" rx="1" fill="#1a6bcc" fill-opacity="0.3"/>
+      <rect x="6"  y="32" width="18" height="3" rx="1" fill="#1a6bcc" fill-opacity="0.4"/>
+      <rect x="6"  y="37" width="10" height="3" rx="1" fill="#1a6bcc" fill-opacity="0.25"/>
+      <rect x="33" y="10" width="22" height="50" rx="3" fill="#1a6bcc" fill-opacity="0.12" stroke="#1a6bcc" stroke-width="2"/>
+      <circle cx="44" cy="28" r="7" fill="#1a6bcc" fill-opacity="0.3" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="44" cy="50" r="5" fill="#1a6bcc" fill-opacity="0.2" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="62" y="18" width="22" height="34" rx="3" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="66" y="24" width="14" height="14" rx="7" fill="#1a6bcc" fill-opacity="0.3" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="66" y="40" width="14" height="4" rx="1" fill="#1a6bcc" fill-opacity="0.25"/>
+      <rect x="66" y="46" width="10" height="4" rx="1" fill="#1a6bcc" fill-opacity="0.2"/>
+    </svg>`,
+    'mini-d2a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="6" y1="12" x2="38" y2="12" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <path d="M34 8 L39 12 L34 16" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <line x1="6" y1="25" x2="38" y2="25" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <path d="M34 21 L39 25 L34 29" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <line x1="6" y1="38" x2="38" y2="38" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <path d="M34 34 L39 38 L34 42" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <line x1="6" y1="51" x2="38" y2="51" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <path d="M34 47 L39 51 L34 55" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <line x1="6" y1="62" x2="38" y2="62" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2"/>
+      <path d="M34 58 L39 62 L34 66" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="48" y="6"  width="34" height="8" rx="2" fill="#1a6bcc" fill-opacity="0.35" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="48" y="19" width="34" height="8" rx="2" fill="#1a6bcc" fill-opacity="0.25" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="48" y="32" width="34" height="8" rx="2" fill="#1a6bcc" fill-opacity="0.35" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="48" y="45" width="34" height="8" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="48" y="58" width="34" height="8" rx="2" fill="#1a6bcc" fill-opacity="0.1"  stroke="#1a6bcc" stroke-width="1" stroke-dasharray="3 2"/>
+    </svg>`,
+    'mini-d2b': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="6" width="72" height="58" rx="4" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="8" y1="18" x2="80" y2="18" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="14" y="24" width="26" height="7" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1"/>
+      <rect x="44" y="24" width="30" height="7" rx="2" fill="#1a6bcc" fill-opacity="0.3" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="14" y="36" width="26" height="7" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1"/>
+      <rect x="44" y="36" width="22" height="7" rx="2" fill="#1a6bcc" fill-opacity="0.3" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="14" y="48" width="26" height="7" rx="2" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="1"/>
+      <rect x="44" y="48" width="28" height="7" rx="2" fill="#1a6bcc" fill-opacity="0.3" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="12" y="9" width="20" height="6" rx="1" fill="#1a6bcc" fill-opacity="0.25"/>
+      <circle cx="47" cy="24" r="1.5" fill="#1a6bcc"/>
+      <circle cx="47" cy="36" r="1.5" fill="#1a6bcc"/>
+      <circle cx="47" cy="48" r="1.5" fill="#1a6bcc"/>
+    </svg>`,
+    'mini-d3a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 50 C18 50 14 44 14 38 C14 28 20 20 28 18" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <path d="M70 50 C70 50 74 44 74 38 C74 28 68 20 60 18" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <path d="M28 18 C28 12 60 12 60 18" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <circle cx="18" cy="52" r="8" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="2"/>
+      <circle cx="70" cy="52" r="8" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="2"/>
+      <rect x="14" y="49" width="8" height="6" rx="1" fill="#1a6bcc" fill-opacity="0.4"/>
+      <rect x="66" y="49" width="8" height="6" rx="1" fill="#1a6bcc" fill-opacity="0.4"/>
+      <circle cx="26" cy="27" r="3" fill="#1a6bcc" fill-opacity="0.3"/>
+      <circle cx="44" cy="20" r="3" fill="#1a6bcc" fill-opacity="0.3"/>
+      <circle cx="62" cy="27" r="3" fill="#1a6bcc" fill-opacity="0.3"/>
+      <path d="M29" y1="27" x2="41" y2="22" stroke="#1a6bcc" stroke-width="1" opacity="0.4"/>
+    </svg>`,
+    'mini-d3b': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="10" width="34" height="50" rx="3" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="10" y1="22" x2="32" y2="22" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="10" cy="22" r="2" fill="#1a6bcc" fill-opacity="0.5"/>
+      <line x1="10" y1="31" x2="32" y2="31" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="10" cy="31" r="2" fill="#1a6bcc" fill-opacity="0.5"/>
+      <line x1="10" y1="40" x2="32" y2="40" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="10" cy="40" r="2" fill="#1a6bcc" fill-opacity="0.5"/>
+      <line x1="10" y1="49" x2="28" y2="49" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="10" cy="49" r="2" fill="#1a6bcc" fill-opacity="0.5"/>
+      <line x1="44" y1="8" x2="44" y2="62" stroke="#1a6bcc" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <circle cx="66" cy="35" r="16" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="66" cy="32" r="9"  fill="none"   stroke="#1a6bcc" stroke-width="2"/>
+      <circle cx="66" cy="32" r="3"  fill="#1a6bcc"/>
+      <line x1="72" y1="40" x2="80" y2="50" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <line x1="78" y1="48" x2="82" y2="48" stroke="#1a6bcc" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>`,
+    'mini-d3c': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 6 L74 6 L64 20 L24 20 Z" fill="#1a6bcc" fill-opacity="0.4" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M24 20 L64 20 L56 34 L32 34 Z" fill="#1a6bcc" fill-opacity="0.28" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M32 34 L56 34 L50 48 L38 48 Z" fill="#1a6bcc" fill-opacity="0.18" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M38 48 L50 48 L44 62 Z" fill="#1a6bcc" fill-opacity="0.1" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>`,
+    'mini-d4a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="44" cy="35" r="30" fill="none" stroke="#1a6bcc" stroke-width="2" stroke-dasharray="6 3"/>
+      <circle cx="44" cy="35" r="18" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="2"/>
+      <circle cx="44" cy="35" r="7"  fill="#1a6bcc" fill-opacity="0.3" stroke="#1a6bcc" stroke-width="2"/>
+      <circle cx="44" cy="35" r="2"  fill="#1a6bcc"/>
+      <circle cx="44" cy="6"  r="4"  fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="44" cy="64" r="4"  fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="14" cy="35" r="4"  fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="74" cy="35" r="4"  fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+    </svg>`,
+    'mini-d4b': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="24" y="4"  width="40" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.35" stroke="#1a6bcc" stroke-width="1.5"/>
+      <path d="M14 14 L44 24 L74 14" stroke="#1a6bcc" stroke-width="1.5" fill="none"/>
+      <rect x="10" y="24" width="28" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.25" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="50" y="24" width="28" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.25" stroke="#1a6bcc" stroke-width="1.5"/>
+      <path d="M20" y1="34" x2="32" y2="42" stroke="#1a6bcc" stroke-width="1.5"/>
+      <path d="M58" y1="34" x2="56" y2="42" stroke="#1a6bcc" stroke-width="1.5"/>
+      <rect x="24" y="42" width="40" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.18" stroke="#1a6bcc" stroke-width="1.5"/>
+      <path d="M44 52 L44 62" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <rect x="28" y="58" width="32" height="10" rx="2" fill="#1a6bcc" fill-opacity="0.12" stroke="#1a6bcc" stroke-width="1.5"/>
+    </svg>`,
+    'mini-d5a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="35" r="12" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="16" cy="35" r="8"  fill="none"   stroke="#1a6bcc" stroke-width="1"/>
+      <line   x1="16" y1="23" x2="16" y2="35" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <line   x1="16" y1="35" x2="22" y2="40" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="44" cy="35" r="12" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="44" cy="35" r="8"  fill="none"   stroke="#1a6bcc" stroke-width="1"/>
+      <line   x1="44" y1="23" x2="44" y2="35" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <line   x1="44" y1="35" x2="50" y2="31" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="72" cy="35" r="12" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="72" cy="35" r="8"  fill="none"   stroke="#1a6bcc" stroke-width="1"/>
+      <line   x1="72" y1="23" x2="72" y2="35" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <line   x1="72" y1="35" x2="76" y2="41" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="4"  y="51" width="24" height="6" rx="2" fill="#1a6bcc" fill-opacity="0.2"/>
+      <rect x="32" y="51" width="24" height="6" rx="2" fill="#1a6bcc" fill-opacity="0.3"/>
+      <rect x="60" y="51" width="24" height="6" rx="2" fill="#1a6bcc" fill-opacity="0.1"/>
+    </svg>`,
+    'mini-d5b': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="7" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="44" cy="12" r="7" fill="#1a6bcc" fill-opacity="0.2" stroke="#1a6bcc" stroke-width="2"/>
+      <path d="M19 12 L37 12" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M34 9 L38 12 L34 15" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M44 19 L34 32" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M44 19 L54 32" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="28" cy="38" r="7" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="60" cy="38" r="7" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="35" y1="38" x2="53" y2="38" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="44" cy="38" r="3" fill="#1a6bcc"/>
+      <path d="M28 45 L28 58" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M60 45 L60 58" stroke="#1a6bcc" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="12" cy="62" r="5" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <circle cx="76" cy="62" r="5" fill="#e8f0fb" stroke="#1a6bcc" stroke-width="1.5"/>
+      <line x1="17" y1="62" x2="71" y2="62" stroke="#1a6bcc" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>`,
+  };
+
+  function initImagePlaceholders() {
+    document.querySelectorAll('.prompt-card').forEach(card => {
+      const el = card.querySelector('[id]');
+      if (!el || !CARD_SVGS[el.id]) return;
+      const content = document.createElement('div');
+      content.className = 'card-content';
+      [...card.children].forEach(child => content.appendChild(child));
+      const imgDiv = document.createElement('div');
+      imgDiv.className = 'card-image';
+      imgDiv.innerHTML = CARD_SVGS[el.id];
+      card.appendChild(imgDiv);
+      card.appendChild(content);
+    });
+  }
+
   function togglePrompt(card) { card.classList.toggle('expanded'); }
+
+  function toggleGenerated(cb) {
+    const card = cb.closest('.prompt-card');
+    const id = card.querySelector('[id]').id;
+    localStorage.setItem('nlm_gen_' + id, cb.checked);
+    card.classList.toggle('generated', cb.checked);
+  }
+
+  function toggleCompleted(cb) {
+    const card = cb.closest('.prompt-card');
+    const id = card.querySelector('[id]').id;
+    localStorage.setItem('nlm_done_' + id, cb.checked);
+    card.classList.toggle('completed', cb.checked);
+  }
+
+  function toggleRenamed(cb) {
+    const card = cb.closest('.prompt-card');
+    const id = card.querySelector('[id]').id;
+    localStorage.setItem('nlm_renamed_' + id, cb.checked);
+  }
+
+  function initGenerated() {
+    document.querySelectorAll('.prompt-card').forEach(card => {
+      const el = card.querySelector('[id]');
+      if (!el) return;
+      const genCb     = card.querySelector('.generated-check');
+      const renamedCb = card.querySelector('.renamed-check');
+      const doneCb    = card.querySelector('.completed-check');
+      if (genCb) {
+        const saved = localStorage.getItem('nlm_gen_' + el.id) === 'true';
+        genCb.checked = saved;
+        if (saved) card.classList.add('generated');
+      }
+      if (renamedCb) {
+        renamedCb.checked = localStorage.getItem('nlm_renamed_' + el.id) === 'true';
+      }
+      if (doneCb) {
+        const saved = localStorage.getItem('nlm_done_' + el.id) === 'true';
+        doneCb.checked = saved;
+        if (saved) card.classList.add('completed');
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    initImagePlaceholders();
+    document.querySelectorAll('.prompt-card').forEach(c => c.classList.add('expanded'));
+    initGenerated();
+  });
+
   function copyPrompt(id, btn) {
     btn.closest('.prompt-card').classList.add('expanded');
     const text = document.getElementById(id).innerText;
@@ -624,5 +969,6 @@
     });
   }
 </script>
+<script src="../assets/transitions.js"></script>
 </body>
 </html>

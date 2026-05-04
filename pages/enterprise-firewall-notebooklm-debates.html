@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Enterprise Firewall 7.6 — NotebookLM Debates</title>
@@ -76,22 +76,33 @@
 
   .prompts-grid {
     display: flex;
-    flex-wrap: nowrap;
-    gap: 16px;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
   }
 
   /* ── DEBATE CARD ── */
   .prompt-card {
-    flex: 1; min-width: 0;
     background: var(--cream);
     border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: stretch;
     transition: box-shadow 0.2s ease;
   }
+
+  /* ── IMAGE PLACEHOLDER ── */
+  .card-image {
+    width: 172px; flex-shrink: 0;
+    border-right: 1px solid var(--purple-border);
+    background: var(--purple-light);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px; padding: 18px 14px; text-align: center;
+  }
+  .card-image svg { max-width: 100%; height: auto; }
+  .card-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .prompt-card:hover { box-shadow: 0 8px 28px rgba(26,18,9,0.09); }
 
   .prompt-card-head {
@@ -155,14 +166,33 @@
   }
   .side {
     border-radius: 10px;
-    padding: 10px 12px;
+    padding: 10px 32px 10px 12px;
     font-size: 11px;
     line-height: 1.6;
+    position: relative;
   }
   .side-label {
     font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
     margin-bottom: 4px;
   }
+  .side-copy-btn {
+    position: absolute;
+    top: 7px; right: 7px;
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    background: none;
+    opacity: 0.35;
+    transition: opacity 0.15s ease, background 0.15s ease;
+    padding: 0;
+  }
+  .side-copy-btn:hover { opacity: 1; }
+  .side-a .side-copy-btn { border: 1px solid var(--orange-border); color: var(--orange); }
+  .side-a .side-copy-btn:hover { background: var(--orange-light); }
+  .side-b .side-copy-btn { border: 1px solid var(--purple-border); color: var(--purple); }
+  .side-b .side-copy-btn:hover { background: var(--purple-light); }
+  .side-copy-btn.copied { opacity: 1; background: var(--green-light) !important; border-color: var(--green-border) !important; color: var(--green) !important; }
   .side-a {
     background: var(--orange-light);
     border: 1px solid var(--orange-border);
@@ -216,12 +246,49 @@
 
   .prompt-icon { background: var(--purple-light); border: 1px solid var(--purple-border); }
 
+  /* ── CHECKBOXES ── */
+  .check-group { display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+  .check-wrap { display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
+  .check-wrap input[type="checkbox"] { display: none; }
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border); border-radius: 4px;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+  }
+  .check-wrap:hover .check-box { transform: scale(1.1); }
+  .check-label { font-size: 10px; font-weight: 600; letter-spacing: 0.09em; color: var(--ink-muted); text-transform: uppercase; transition: color 0.15s ease; }
+  .check-wrap:hover .check-box--green { border-color: var(--green); }
+  .generated-check:checked + .check-box--green { background: var(--green); border-color: var(--green); }
+  .generated-check:checked + .check-box--green::after { content: ''; display: block; width: 3px; height: 7px; border: 1.5px solid white; border-top: none; border-left: none; transform: rotate(45deg) translate(0,-1px); }
+  .generated-check:checked ~ .check-label { color: var(--green); }
+  .check-wrap:hover .check-box--blue { border-color: var(--blue); }
+  .completed-check:checked + .check-box--blue { background: var(--blue); border-color: var(--blue); }
+  .completed-check:checked + .check-box--blue::after { content: ''; display: block; width: 3px; height: 7px; border: 1.5px solid white; border-top: none; border-left: none; transform: rotate(45deg) translate(0,-1px); }
+  .completed-check:checked ~ .check-label { color: var(--blue); }
+  .check-wrap:hover .check-box--amber { border-color: #a07c00; }
+  .renamed-check:checked + .check-box--amber { background: #a07c00; border-color: #a07c00; }
+  .renamed-check:checked + .check-box--amber::after { content: ''; display: block; width: 3px; height: 7px; border: 1.5px solid white; border-top: none; border-left: none; transform: rotate(45deg) translate(0,-1px); }
+  .renamed-check:checked ~ .check-label { color: #a07c00; }
+  .prompt-card.generated .prompt-card-head { background: var(--green-light); }
+  .prompt-card.generated.expanded .prompt-card-head { border-bottom-color: var(--green-border); }
+  .prompt-card.generated .prompt-episode { color: var(--green); }
+  .prompt-card.generated .prompt-episode::before { content: '✓  '; font-weight: 700; }
+  .prompt-card.completed .prompt-card-head { background: var(--blue-light); }
+  .prompt-card.completed.expanded .prompt-card-head { border-bottom-color: var(--blue-border); }
+  .prompt-card.completed .prompt-episode { color: var(--blue); }
+  .prompt-card.completed .prompt-episode::before { content: '✓  '; font-weight: 700; }
+  .prompt-card.generated.completed .prompt-card-head { background: var(--blue-light); }
+  .prompt-card.generated.completed .prompt-episode { color: var(--blue); }
+
   @media (max-width: 900px) {
     .nlm-header { padding: 24px 20px; }
     .how-to-banner { margin: 20px 20px 0; }
     .nlm-body { padding: 28px 20px 60px; }
-    .prompts-grid { flex-wrap: wrap; }
-    .prompt-card { flex: 1 1 300px; }
+    .prompt-card { flex-direction: column; }
+    .card-image { width: 100%; border-right: none; border-bottom: 1px solid var(--purple-border); flex-direction: row; justify-content: flex-start; padding: 12px 16px; gap: 12px; }
+    .card-image-text { text-align: left; }
     .debate-sides { grid-template-columns: 1fr; }
   }
 </style>
@@ -276,6 +343,11 @@
             <div class="prompt-title">Active-Active vs Active-Passive HA</div>
             <div class="prompt-motion">Motion: "For enterprise firewalls, Active-Active HA is always worth the complexity over Active-Passive."</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -305,6 +377,11 @@
             <div class="prompt-episode">DEBATE · DOMAIN 1</div>
             <div class="prompt-title">Physical Firewalls vs VDOMs</div>
             <div class="prompt-motion">Motion: "Separate physical firewalls always provide stronger isolation than VDOMs on a shared chassis."</div>
+          </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
           </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
@@ -350,6 +427,11 @@
             <div class="prompt-episode">DEBATE · DOMAIN 2</div>
             <div class="prompt-title">FortiManager for Every Device vs Local Control</div>
             <div class="prompt-motion">Motion: "Every enterprise FortiGate must be managed through FortiManager — no exceptions, no direct CLI access."</div>
+          </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
           </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
@@ -397,6 +479,11 @@
             <div class="prompt-title">Full SSL Inspection vs Certificate Inspection</div>
             <div class="prompt-motion">Motion: "The performance cost and privacy implications of full SSL deep inspection outweigh the security benefits for most enterprises."</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -427,6 +514,11 @@
             <div class="prompt-episode">DEBATE · DOMAIN 3</div>
             <div class="prompt-title">IPS Block Mode from Day One vs Monitor First</div>
             <div class="prompt-motion">Motion: "Running IPS in monitor mode before block mode is a necessary baselining period, not security theatre."</div>
+          </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
           </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
@@ -474,6 +566,11 @@
             <div class="prompt-title">OSPF vs BGP for Enterprise WAN</div>
             <div class="prompt-motion">Motion: "BGP has no place inside the enterprise campus — OSPF is always the right interior routing protocol."</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -520,6 +617,11 @@
             <div class="prompt-title">ADVPN vs Traditional Hub-and-Spoke</div>
             <div class="prompt-motion">Motion: "ADVPN's troubleshooting complexity isn't worth the spoke-to-spoke latency savings for most enterprise deployments."</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -551,6 +653,11 @@
             <div class="prompt-title">Certificate Auth vs Pre-Shared Keys for IPsec</div>
             <div class="prompt-motion">Motion: "Pre-shared keys are good enough for enterprise IPsec VPNs — certificate PKI adds complexity without proportional security gains."</div>
           </div>
+          <div class="check-group" onclick="event.stopPropagation()">
+            <label class="check-wrap"><input type="checkbox" class="generated-check" onchange="toggleGenerated(this)"><span class="check-box check-box--green"></span><span class="check-label">Generated</span></label>
+            <label class="check-wrap"><input type="checkbox" class="renamed-check" onchange="toggleRenamed(this)"><span class="check-box check-box--amber"></span><span class="check-label">Renamed</span></label>
+            <label class="check-wrap"><input type="checkbox" class="completed-check" onchange="toggleCompleted(this)"><span class="check-box check-box--blue"></span><span class="check-label">Completed</span></label>
+          </div>
           <div class="prompt-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
         <div class="prompt-body"><div class="prompt-body-inner">
@@ -581,11 +688,231 @@
 
 <footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
   <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <span style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--ink-muted);">If you can argue both sides, the exam can't catch you off guard.</span>
   <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · NotebookLM Debates</div>
 </footer>
 
 <script>
+  const CARD_SVGS = {
+    'debate-d1a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4"  y="24" width="28" height="26" rx="4" fill="#5c35cc" fill-opacity="0.12" stroke="#5c35cc" stroke-width="2"/>
+      <rect x="56" y="24" width="28" height="26" rx="4" fill="#5c35cc" fill-opacity="0.12" stroke="#5c35cc" stroke-width="2"/>
+      <rect x="8"  y="30" width="20" height="3" rx="1" fill="#5c35cc" fill-opacity="0.4"/>
+      <rect x="8"  y="35" width="20" height="3" rx="1" fill="#5c35cc" fill-opacity="0.4"/>
+      <rect x="60" y="30" width="20" height="3" rx="1" fill="#5c35cc" fill-opacity="0.4"/>
+      <rect x="60" y="35" width="20" height="3" rx="1" fill="#5c35cc" fill-opacity="0.4"/>
+      <circle cx="44" cy="37" r="8" fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="40" y1="37" x2="48" y2="37" stroke="#5c35cc" stroke-width="2" stroke-linecap="round"/>
+      <line x1="40" y1="33" x2="40" y2="41" stroke="#5c35cc" stroke-width="2" stroke-linecap="round"/>
+      <line x1="48" y1="33" x2="48" y2="41" stroke="#5c35cc" stroke-width="2" stroke-linecap="round"/>
+      <rect x="4"  y="54" width="28" height="5" rx="2" fill="#5c35cc" fill-opacity="0.2"/>
+      <rect x="56" y="54" width="28" height="5" rx="2" fill="#5c35cc" fill-opacity="0.1"/>
+    </svg>`,
+    'debate-d1b': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="38" height="54" rx="3" fill="#5c35cc" fill-opacity="0.08" stroke="#5c35cc" stroke-width="1.5"/>
+      <rect x="46" y="8" width="38" height="54" rx="3" fill="#ece8ff" stroke="#5c35cc" stroke-width="2"/>
+      <line x1="8"  y1="22" x2="38" y2="22" stroke="#5c35cc" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>
+      <line x1="8"  y1="36" x2="38" y2="36" stroke="#5c35cc" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>
+      <line x1="8"  y1="50" x2="38" y2="50" stroke="#5c35cc" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>
+      <line x1="46" y1="22" x2="80" y2="22" stroke="#5c35cc" stroke-width="2"/>
+      <line x1="46" y1="36" x2="80" y2="36" stroke="#5c35cc" stroke-width="2"/>
+      <line x1="46" y1="50" x2="80" y2="50" stroke="#5c35cc" stroke-width="2"/>
+      <rect x="12" y="26" width="12" height="8" rx="2" fill="#5c35cc" fill-opacity="0.2"/>
+      <rect x="26" y="26" width="8"  height="8" rx="2" fill="#5c35cc" fill-opacity="0.2"/>
+      <rect x="50" y="40" width="10" height="8" rx="2" fill="#5c35cc" fill-opacity="0.4"/>
+      <rect x="62" y="40" width="14" height="8" rx="2" fill="#5c35cc" fill-opacity="0.4"/>
+    </svg>`,
+    'debate-d2a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="35" r="16" fill="#5c35cc" fill-opacity="0.12" stroke="#5c35cc" stroke-width="2"/>
+      <circle cx="24" cy="35" r="5"  fill="#5c35cc" fill-opacity="0.5"/>
+      <circle cx="24" cy="14" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="24" cy="56" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="8"  cy="35" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="40" cy="35" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="62" cy="10" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="76" cy="20" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="82" cy="35" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="76" cy="50" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="62" cy="60" r="4"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+    </svg>`,
+    'debate-d3a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="22" width="36" height="28" rx="4" fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <path d="M4 22 L22 38 L40 22" stroke="#5c35cc" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="22" cy="44" r="6" fill="#5c35cc" fill-opacity="0.15" stroke="#5c35cc" stroke-width="1.5"/>
+      <path d="M18 44 C18 40 26 40 26 44" stroke="#5c35cc" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <rect x="20" y="44" width="4" height="5" rx="1" fill="#5c35cc" fill-opacity="0.4"/>
+      <line x1="44" y1="8"  x2="44" y2="62" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <rect x="50" y="22" width="34" height="28" rx="4" fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <path d="M50 22 L67 38 L84 22" stroke="#5c35cc" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="67" cy="46" r="7" fill="#5c35cc" fill-opacity="0.2" stroke="#5c35cc" stroke-width="1.5"/>
+      <path d="M63 44 C65 42 69 42 71 44 C69 48 65 48 63 44Z" fill="#5c35cc" fill-opacity="0.4"/>
+      <circle cx="67" cy="44" r="2" fill="#5c35cc"/>
+    </svg>`,
+    'debate-d3b': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="22,6 34,10 40,22 34,34 22,38 10,34 4,22 10,10" fill="#5c35cc" fill-opacity="0.12" stroke="#5c35cc" stroke-width="2"/>
+      <line x1="15" y1="15" x2="29" y2="29" stroke="#5c35cc" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="29" y1="15" x2="15" y2="29" stroke="#5c35cc" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="44" y1="8"  x2="44" y2="62" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <circle cx="66" cy="22" r="14" fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="66" cy="22" r="8"  fill="none"   stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="66" cy="22" r="2"  fill="#5c35cc"/>
+      <path d="M66 30 L62 42" stroke="#5c35cc" stroke-width="2" stroke-linecap="round"/>
+      <path d="M66 30 L70 42" stroke="#5c35cc" stroke-width="2" stroke-linecap="round"/>
+    </svg>`,
+    'debate-d4a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="36" height="62" rx="3" fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="8"  y1="15" x2="36" y2="15" stroke="#5c35cc" stroke-width="1" opacity="0.4"/>
+      <line x1="8"  y1="24" x2="36" y2="24" stroke="#5c35cc" stroke-width="1" opacity="0.4"/>
+      <line x1="8"  y1="33" x2="36" y2="33" stroke="#5c35cc" stroke-width="1" opacity="0.4"/>
+      <line x1="8"  y1="42" x2="36" y2="42" stroke="#5c35cc" stroke-width="1" opacity="0.4"/>
+      <line x1="8"  y1="51" x2="36" y2="51" stroke="#5c35cc" stroke-width="1" opacity="0.4"/>
+      <line x1="18" y1="8" x2="18" y2="62" stroke="#5c35cc" stroke-width="1" opacity="0.4"/>
+      <line x1="28" y1="8" x2="28" y2="62" stroke="#5c35cc" stroke-width="1" opacity="0.4"/>
+      <circle cx="12" cy="19" r="3" fill="#5c35cc" fill-opacity="0.5"/>
+      <circle cx="22" cy="28" r="3" fill="#5c35cc" fill-opacity="0.5"/>
+      <circle cx="32" cy="13" r="3" fill="#5c35cc" fill-opacity="0.5"/>
+      <path d="M12 19 L22 28 L32 13" stroke="#5c35cc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="44" y1="8"  x2="44" y2="62" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <rect x="48" y="4" width="36" height="62" rx="3" fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="66" cy="12" r="5" fill="#5c35cc" fill-opacity="0.4"/>
+      <circle cx="54" cy="32" r="4" fill="#5c35cc" fill-opacity="0.3"/>
+      <circle cx="78" cy="32" r="4" fill="#5c35cc" fill-opacity="0.3"/>
+      <circle cx="58" cy="54" r="4" fill="#5c35cc" fill-opacity="0.2"/>
+      <circle cx="74" cy="54" r="4" fill="#5c35cc" fill-opacity="0.2"/>
+      <line x1="66" y1="17" x2="57" y2="28" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="66" y1="17" x2="75" y2="28" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="57" y1="36" x2="59" y2="50" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="75" y1="36" x2="73" y2="50" stroke="#5c35cc" stroke-width="1.5"/>
+    </svg>`,
+    'debate-d5a': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="22" cy="35" r="7"  fill="#5c35cc" fill-opacity="0.2" stroke="#5c35cc" stroke-width="2"/>
+      <circle cx="8"  cy="14" r="5"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="36" cy="14" r="5"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="36" cy="56" r="5"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="8"  cy="56" r="5"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="13" y1="18" x2="17" y2="29" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="31" y1="18" x2="27" y2="29" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="13" y1="52" x2="17" y2="41" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="31" y1="52" x2="27" y2="41" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="44" y1="8"  x2="44" y2="62" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <circle cx="66" cy="35" r="7"  fill="#5c35cc" fill-opacity="0.2" stroke="#5c35cc" stroke-width="2"/>
+      <circle cx="52" cy="14" r="5"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="80" cy="14" r="5"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="80" cy="56" r="5"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <circle cx="52" cy="56" r="5"  fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="57" y1="18" x2="61" y2="29" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="75" y1="18" x2="71" y2="29" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="57" y1="52" x2="61" y2="41" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="75" y1="52" x2="71" y2="41" stroke="#5c35cc" stroke-width="1.5"/>
+      <line x1="52" y1="18" x2="80" y2="18" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="2 2"/>
+      <line x1="52" y1="52" x2="80" y2="52" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="2 2"/>
+      <line x1="52" y1="18" x2="80" y2="52" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="2 2"/>
+      <line x1="80" y1="18" x2="52" y2="52" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="2 2"/>
+    </svg>`,
+    'debate-d5b': `<svg viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="36" r="12" fill="#ece8ff" stroke="#5c35cc" stroke-width="1.5"/>
+      <path d="M10 32 L10 28 L22 28 L22 40 L14 40 L14 44 L10 44 L10 40 L8 38 L8 34 Z" fill="#5c35cc" fill-opacity="0.25" stroke="#5c35cc" stroke-width="1.2"/>
+      <line x1="10" y1="34" x2="18" y2="34" stroke="#5c35cc" stroke-width="1.2"/>
+      <circle cx="10" cy="37" r="1.5" fill="#5c35cc"/>
+      <line x1="44" y1="8"  x2="44" y2="62" stroke="#5c35cc" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <path d="M66 16 L58 24 L58 48 L66 56 L74 48 L74 24 Z" fill="#ece8ff" stroke="#5c35cc" stroke-width="2"/>
+      <path d="M61 28 L71 28" stroke="#5c35cc" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M61 35 L71 35" stroke="#5c35cc" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M61 42 L67 42" stroke="#5c35cc" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M69 40 L73 44 L66 46" fill="none" stroke="#5c35cc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+  };
+
+  function initImagePlaceholders() {
+    document.querySelectorAll('.prompt-card').forEach(card => {
+      const el = card.querySelector('[id]');
+      if (!el || !CARD_SVGS[el.id]) return;
+      const content = document.createElement('div');
+      content.className = 'card-content';
+      [...card.children].forEach(child => content.appendChild(child));
+      const imgDiv = document.createElement('div');
+      imgDiv.className = 'card-image';
+      imgDiv.innerHTML = CARD_SVGS[el.id];
+      card.appendChild(imgDiv);
+      card.appendChild(content);
+    });
+  }
+
   function togglePrompt(card) { card.classList.toggle('expanded'); }
+
+  function toggleGenerated(cb) {
+    const card = cb.closest('.prompt-card');
+    const id = card.querySelector('[id]').id;
+    localStorage.setItem('nlm_gen_' + id, cb.checked);
+    card.classList.toggle('generated', cb.checked);
+  }
+
+  function toggleCompleted(cb) {
+    const card = cb.closest('.prompt-card');
+    const id = card.querySelector('[id]').id;
+    localStorage.setItem('nlm_done_' + id, cb.checked);
+    card.classList.toggle('completed', cb.checked);
+  }
+
+  function toggleRenamed(cb) {
+    const card = cb.closest('.prompt-card');
+    const id = card.querySelector('[id]').id;
+    localStorage.setItem('nlm_renamed_' + id, cb.checked);
+  }
+
+  function initGenerated() {
+    document.querySelectorAll('.prompt-card').forEach(card => {
+      const el = card.querySelector('[id]');
+      if (!el) return;
+      const genCb     = card.querySelector('.generated-check');
+      const renamedCb = card.querySelector('.renamed-check');
+      const doneCb    = card.querySelector('.completed-check');
+      if (genCb) {
+        const saved = localStorage.getItem('nlm_gen_' + el.id) === 'true';
+        genCb.checked = saved;
+        if (saved) card.classList.add('generated');
+      }
+      if (renamedCb) {
+        renamedCb.checked = localStorage.getItem('nlm_renamed_' + el.id) === 'true';
+      }
+      if (doneCb) {
+        const saved = localStorage.getItem('nlm_done_' + el.id) === 'true';
+        doneCb.checked = saved;
+        if (saved) card.classList.add('completed');
+      }
+    });
+  }
+  function initSideCopyBtns() {
+    const copyIcon = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+    const doneIcon = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    document.querySelectorAll('.side').forEach(side => {
+      const btn = document.createElement('button');
+      btn.className = 'side-copy-btn';
+      btn.innerHTML = copyIcon;
+      btn.title = 'Copy this argument';
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const label = side.querySelector('.side-label');
+        const text = Array.from(side.childNodes)
+          .filter(n => n !== label && n !== btn)
+          .map(n => n.textContent).join('').trim();
+        navigator.clipboard.writeText(text).then(() => {
+          btn.classList.add('copied');
+          btn.innerHTML = doneIcon;
+          setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = copyIcon; }, 2000);
+        });
+      });
+      side.appendChild(btn);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initImagePlaceholders();
+    document.querySelectorAll('.prompt-card').forEach(c => c.classList.add('expanded'));
+    initGenerated();
+    initSideCopyBtns();
+  });
+
   function copyPrompt(id, btn) {
     btn.closest('.prompt-card').classList.add('expanded');
     const text = document.getElementById(id).innerText;
@@ -599,5 +926,6 @@
     });
   }
 </script>
+<script src="../assets/transitions.js"></script>
 </body>
 </html>

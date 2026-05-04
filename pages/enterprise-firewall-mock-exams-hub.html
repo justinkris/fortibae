@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — Mock Exams</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    padding: 40px 20px 80px;
+  }
+
+  .breadcrumb-wrap {
+    position: absolute;
+    top: 40px;
+    left: 60px;
+  }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .page-title .day-badge { display: inline-flex; margin-bottom: 14px; }
+  .page-title .day-badge-dot { background: #0d9488; }
+  .page-title h1 { font-size: 48px; }
+  .page-title p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ── HUB CARD BASE ── */
+  .hub-card {
+    width: 300px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease,
+                border-color 0.3s ease;
+  }
+
+  /* shine sweep */
+  .hub-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -80%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.22) 50%, transparent);
+    transform: skewX(-15deg);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .hub-card:hover::before { animation: card-shine 0.55s ease forwards; }
+  @keyframes card-shine { to { left: 160%; } }
+
+  /* ── PER-CARD HOVER ── */
+  .hub-card.type-full:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1.5deg);
+    box-shadow: 0 32px 64px rgba(13,148,136,0.3), 0 0 0 2px #99d9d5;
+    border-color: #99d9d5;
+  }
+  .hub-card.type-domain:hover {
+    transform: translateY(-22px) scale(1.05) rotate(2deg);
+    box-shadow: 0 32px 64px rgba(26,107,204,0.3), 0 0 0 2px #b3ccf0;
+    border-color: #b3ccf0;
+  }
+  .hub-card.type-rapid:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-2deg);
+    box-shadow: 0 32px 64px rgba(255,107,53,0.3), 0 0 0 2px #ffd5c0;
+    border-color: #ffd5c0;
+  }
+
+  /* image tints on hover */
+  .hub-card .card-img { transition: background 0.3s ease; overflow: hidden; }
+  .hub-card.type-full:hover   .card-img { background: #b3e8e5; }
+  .hub-card.type-domain:hover .card-img { background: #b8d5f5; }
+  .hub-card.type-rapid:hover  .card-img { background: #ffd4b8; }
+
+  /* arrow nudge */
+  .hub-card:hover .card-arrow svg {
+    animation: arrow-nudge 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  }
+  @keyframes arrow-nudge { to { transform: translateX(5px); } }
+
+  /* ── SVG ICON ANIMATIONS ── */
+  .hub-card.type-full:hover .full-exam-icon {
+    animation: full-rise 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes full-rise { to { transform: translateY(-5px); } }
+
+  .hub-card.type-domain:hover .domain-quiz-icon {
+    animation: pie-spin 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes pie-spin { to { transform: rotate(15deg); } }
+
+  .hub-card.type-rapid:hover .rapid-icon {
+    animation: rapid-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes rapid-pop { to { transform: scale(1.1) translateY(-3px); } }
+
+  /* ── CARD IMAGE AREA ── */
+  .card-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hub-card.type-full   .card-img { background: #e6f7f5; border-bottom-color: #99d9d5; }
+  .hub-card.type-domain .card-img { background: #e8f0fb; border-bottom-color: #b3ccf0; }
+  .hub-card.type-rapid  .card-img { background: #fff3ec; border-bottom-color: #ffd5c0; }
+  .card-img svg { width: 80px; height: 80px; }
+
+  /* ── CARD BODY ── */
+  .card-body {
+    padding: 20px 22px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+  .hub-card.type-full   .card-label { color: #0d9488; }
+  .hub-card.type-domain .card-label { color: #1a6bcc; }
+  .hub-card.type-rapid  .card-label { color: #ff6b35; }
+
+  .card-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.65;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-desc {
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 4px;
+  }
+  .card-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-meta {
+    max-height: 60px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+  .card-pill {
+    font-size: 10px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+    background: var(--cream-dark);
+  }
+  .card-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-arrow {
+    max-height: 40px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+  .hub-card.type-full   .card-arrow { color: #0d9488; }
+  .hub-card.type-domain .card-arrow { color: #1a6bcc; }
+  .hub-card.type-rapid  .card-arrow { color: #ff6b35; }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb-wrap">
+  <div class="breadcrumb">
+    <a href="../index.html">NSE7</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Enterprise Firewall 7.6</span>
+    <span class="breadcrumb-sep">/</span>
+    <span>Mock Exams</span>
+  </div>
+</div>
+
+<div class="page-title">
+  <div class="day-badge">
+    <span class="day-badge-dot"></span>
+    MOCK EXAMS · ENTERPRISE FIREWALL 7.6
+  </div>
+  <h1>Test your <em>knowledge</em></h1>
+  <p>Three formats of practice assessment. Use Full Mocks when you want the real exam feel, Domain Quizzes to target gaps, and Rapid Fire for final-day sharpening.</p>
+</div>
+
+<div class="card-row">
+
+  <!-- Full Mock Exam -->
+  <a class="hub-card type-full" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="full-exam-icon">
+          <!-- answer sheet -->
+          <rect x="10" y="14" width="44" height="50" rx="4" fill="#0d9488" fill-opacity="0.1" stroke="#0d9488" stroke-width="2"/>
+          <!-- timer top-right -->
+          <circle cx="56" cy="18" r="8" fill="#0d9488" fill-opacity="0.2" stroke="#0d9488" stroke-width="1.8"/>
+          <line x1="56" y1="13" x2="56" y2="18" stroke="#0d9488" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="56" y1="18" x2="59" y2="20" stroke="#0d9488" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- MC rows -->
+          <!-- row 1 -->
+          <circle cx="20" cy="30" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="30" cy="30" r="3.5" fill="#0d9488" fill-opacity="0.55" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="40" cy="30" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <!-- row 2 -->
+          <circle cx="20" cy="40" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="30" cy="40" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="40" cy="40" r="3.5" fill="#0d9488" fill-opacity="0.55" stroke="#0d9488" stroke-width="1.5"/>
+          <!-- row 3 -->
+          <circle cx="20" cy="50" r="3.5" fill="#0d9488" fill-opacity="0.55" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="30" cy="50" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="40" cy="50" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <!-- row 4 -->
+          <circle cx="20" cy="58" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="30" cy="58" r="3.5" fill="#0d9488" fill-opacity="0.4" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="40" cy="58" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <!-- row 5 -->
+          <circle cx="20" cy="22" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="30" cy="22" r="3.5" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+          <circle cx="40" cy="22" r="3.5" fill="#0d9488" fill-opacity="0.45" stroke="#0d9488" stroke-width="1.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">30 QUESTIONS · TIMED</div>
+      <div class="card-name">Full Mock Exam</div>
+      <div class="card-desc">A complete timed practice exam covering all 5 domains at the same weighting as the real NSE7 — sit it, score it, review every wrong answer.</div>
+      <div class="card-meta">
+        <span class="card-pill">30 questions</span>
+        <span class="card-pill">60 min</span>
+        <span class="card-pill">All domains</span>
+      </div>
+      <div class="card-arrow">
+        Open Full Mock
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Domain Quizzes -->
+  <a class="hub-card type-domain" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="domain-quiz-icon" style="transform-origin: 36px 36px;">
+          <!-- pie chart: 5 segments -->
+          <!-- segment 1 (highlighted) ~72deg -->
+          <path d="M36 36 L36 8 A28 28 0 0 1 60.4 22 Z" fill="#1a6bcc" fill-opacity="0.55" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- segment 2 -->
+          <path d="M36 36 L60.4 22 A28 28 0 0 1 60.4 50 Z" fill="#1a6bcc" fill-opacity="0.25" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- segment 3 -->
+          <path d="M36 36 L60.4 50 A28 28 0 0 1 36 64 Z" fill="#1a6bcc" fill-opacity="0.18" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- segment 4 -->
+          <path d="M36 36 L36 64 A28 28 0 0 1 11.6 50 Z" fill="#1a6bcc" fill-opacity="0.12" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- segment 5 -->
+          <path d="M36 36 L11.6 50 A28 28 0 0 1 36 8 Z" fill="#1a6bcc" fill-opacity="0.08" stroke="#1a6bcc" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- center -->
+          <circle cx="36" cy="36" r="9" fill="var(--cream)" stroke="#1a6bcc" stroke-width="1.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">10 QUESTIONS · PER DOMAIN</div>
+      <div class="card-name">Domain Quizzes</div>
+      <div class="card-desc">Focused 10-question sets for each of the 5 domains — isolate your weakest area and close the gap before the full mock.</div>
+      <div class="card-meta">
+        <span class="card-pill">5 domains</span>
+        <span class="card-pill">10 questions</span>
+        <span class="card-pill">Targeted</span>
+      </div>
+      <div class="card-arrow">
+        Open Domain Quizzes
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Rapid Fire -->
+  <a class="hub-card type-rapid" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="rapid-icon">
+          <!-- lightning bolt -->
+          <path d="M42 8 L28 38 L36 38 L30 64 L52 30 L42 30 Z" fill="#ff6b35" fill-opacity="0.55" stroke="#ff6b35" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- question mark circles around bolt -->
+          <circle cx="14" cy="20" r="8" fill="#ff6b35" fill-opacity="0.15" stroke="#ff6b35" stroke-width="1.6"/>
+          <text x="14" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#ff6b35" fill-opacity="0.7" font-family="sans-serif">?</text>
+          <circle cx="14" cy="52" r="8" fill="#ff6b35" fill-opacity="0.12" stroke="#ff6b35" stroke-width="1.6"/>
+          <text x="14" y="56" text-anchor="middle" font-size="10" font-weight="700" fill="#ff6b35" fill-opacity="0.6" font-family="sans-serif">?</text>
+          <circle cx="60" cy="36" r="8" fill="#ff6b35" fill-opacity="0.1" stroke="#ff6b35" stroke-width="1.6"/>
+          <text x="60" y="40" text-anchor="middle" font-size="10" font-weight="700" fill="#ff6b35" fill-opacity="0.5" font-family="sans-serif">?</text>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">1 MIN BURSTS · ALL TOPICS</div>
+      <div class="card-name">Rapid Fire</div>
+      <div class="card-desc">Single questions fired one per minute — no explanations, just answer. Builds the recall speed you need when exam nerves kick in.</div>
+      <div class="card-meta">
+        <span class="card-pill">Speed drills</span>
+        <span class="card-pill">All topics</span>
+        <span class="card-pill">Exam-eve</span>
+      </div>
+      <div class="card-arrow">
+        Open Rapid Fire
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+  <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <span style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--ink-muted);">The discomfort of practice is the comfort of exam day.</span>
+  <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · Mock Exams</div>
+</footer>
+
+<script src="../assets/transitions.js"></script>
+</body>
+</html>

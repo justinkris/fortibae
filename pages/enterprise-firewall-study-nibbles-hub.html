@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — Study Nibbles</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    padding: 40px 20px 80px;
+  }
+
+  .breadcrumb-wrap {
+    position: absolute;
+    top: 40px;
+    left: 60px;
+  }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .page-title .day-badge { display: inline-flex; margin-bottom: 14px; }
+  .page-title .day-badge-dot { background: #5c35cc; }
+  .page-title h1 { font-size: 48px; }
+  .page-title p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ── HUB CARD BASE ── */
+  .hub-card {
+    width: 300px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease,
+                border-color 0.3s ease;
+  }
+
+  /* shine sweep */
+  .hub-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -80%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.22) 50%, transparent);
+    transform: skewX(-15deg);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .hub-card:hover::before { animation: card-shine 0.55s ease forwards; }
+  @keyframes card-shine { to { left: 160%; } }
+
+  /* ── PER-CARD HOVER ── */
+  .hub-card.type-facts:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1.5deg);
+    box-shadow: 0 32px 64px rgba(92,53,204,0.3), 0 0 0 2px #c8bbff;
+    border-color: #c8bbff;
+  }
+  .hub-card.type-cli:hover {
+    transform: translateY(-22px) scale(1.05) rotate(2deg);
+    box-shadow: 0 32px 64px rgba(26,107,204,0.3), 0 0 0 2px #b3ccf0;
+    border-color: #b3ccf0;
+  }
+  .hub-card.type-traps:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-2deg);
+    box-shadow: 0 32px 64px rgba(163,45,45,0.3), 0 0 0 2px #f7c1c1;
+    border-color: #f7c1c1;
+  }
+
+  /* image tints on hover */
+  .hub-card .card-img { transition: background 0.3s ease; overflow: hidden; }
+  .hub-card.type-facts:hover  .card-img { background: #d4ccf5; }
+  .hub-card.type-cli:hover    .card-img { background: #b8d5f5; }
+  .hub-card.type-traps:hover  .card-img { background: #f7c1c1; }
+
+  /* arrow nudge */
+  .hub-card:hover .card-arrow svg {
+    animation: arrow-nudge 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  }
+  @keyframes arrow-nudge { to { transform: translateX(5px); } }
+
+  /* ── SVG ICON ANIMATIONS ── */
+  .hub-card.type-facts:hover .facts-icon {
+    animation: facts-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes facts-pop { to { transform: scale(1.06) translateY(-3px); } }
+
+  .hub-card.type-cli:hover .cli-icon {
+    animation: cli-rise 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes cli-rise { to { transform: translateY(-4px); } }
+
+  .hub-card.type-traps:hover .traps-icon {
+    animation: traps-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes traps-pop { to { transform: scale(1.08); } }
+
+  /* ── CARD IMAGE AREA ── */
+  .card-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hub-card.type-facts .card-img  { background: #ece8ff; border-bottom-color: #c8bbff; }
+  .hub-card.type-cli   .card-img  { background: #e8f0fb; border-bottom-color: #b3ccf0; }
+  .hub-card.type-traps .card-img  { background: #fce8e8; border-bottom-color: #f7c1c1; }
+  .card-img svg { width: 80px; height: 80px; }
+
+  /* ── CARD BODY ── */
+  .card-body {
+    padding: 20px 22px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+  .hub-card.type-facts .card-label { color: #5c35cc; }
+  .hub-card.type-cli   .card-label { color: #1a6bcc; }
+  .hub-card.type-traps .card-label { color: #a32d2d; }
+
+  .card-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.65;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-desc {
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 4px;
+  }
+  .card-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-meta {
+    max-height: 60px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+  .card-pill {
+    font-size: 10px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+    background: var(--cream-dark);
+  }
+  .card-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-arrow {
+    max-height: 40px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+  .hub-card.type-facts .card-arrow { color: #5c35cc; }
+  .hub-card.type-cli   .card-arrow { color: #1a6bcc; }
+  .hub-card.type-traps .card-arrow { color: #a32d2d; }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb-wrap">
+  <div class="breadcrumb">
+    <a href="../index.html">NSE7</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Enterprise Firewall 7.6</span>
+    <span class="breadcrumb-sep">/</span>
+    <span>Study Nibbles</span>
+  </div>
+</div>
+
+<div class="page-title">
+  <div class="day-badge">
+    <span class="day-badge-dot"></span>
+    STUDY NIBBLES · ENTERPRISE FIREWALL 7.6
+  </div>
+  <h1>Pick your <em>format</em></h1>
+  <p>Thirty seconds per nibble. Three formats — each designed for a different moment in your revision: commute, desk, or exam-eve panic.</p>
+</div>
+
+<div class="card-row">
+
+  <!-- Key Facts -->
+  <a class="hub-card type-facts" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="facts-icon">
+          <!-- pill 1 top-left -->
+          <rect x="6" y="10" width="28" height="14" rx="7" fill="#5c35cc" fill-opacity="0.2" stroke="#5c35cc" stroke-width="1.8"/>
+          <rect x="10" y="14" width="20" height="6" rx="3" fill="#5c35cc" fill-opacity="0.35"/>
+          <!-- pill 2 top-right, staggered down -->
+          <rect x="38" y="16" width="28" height="14" rx="7" fill="#5c35cc" fill-opacity="0.15" stroke="#5c35cc" stroke-width="1.8"/>
+          <rect x="42" y="20" width="20" height="6" rx="3" fill="#5c35cc" fill-opacity="0.28"/>
+          <!-- pill 3 bottom-left, staggered -->
+          <rect x="6" y="36" width="28" height="14" rx="7" fill="#5c35cc" fill-opacity="0.15" stroke="#5c35cc" stroke-width="1.8"/>
+          <rect x="10" y="40" width="20" height="6" rx="3" fill="#5c35cc" fill-opacity="0.28"/>
+          <!-- pill 4 bottom-right -->
+          <rect x="38" y="44" width="28" height="14" rx="7" fill="#5c35cc" fill-opacity="0.1" stroke="#5c35cc" stroke-width="1.8"/>
+          <rect x="42" y="48" width="20" height="6" rx="3" fill="#5c35cc" fill-opacity="0.2"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">DEFINITIONS · ALL DOMAINS</div>
+      <div class="card-name">Key Facts</div>
+      <div class="card-desc">Single-sentence definitions and must-know distinctions — the raw facts that appear directly in exam questions.</div>
+      <div class="card-meta">
+        <span class="card-pill">All domains</span>
+        <span class="card-pill">30 sec each</span>
+        <span class="card-pill">Pure recall</span>
+      </div>
+      <div class="card-arrow">
+        Open Key Facts
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- CLI Commands -->
+  <a class="hub-card type-cli" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="cli-icon">
+          <!-- terminal window frame -->
+          <rect x="6" y="10" width="60" height="52" rx="6" fill="#1a6bcc" fill-opacity="0.1" stroke="#1a6bcc" stroke-width="2"/>
+          <!-- title bar -->
+          <rect x="6" y="10" width="60" height="14" rx="6" fill="#1a6bcc" fill-opacity="0.3"/>
+          <rect x="6" y="18" width="60" height="6" fill="#1a6bcc" fill-opacity="0.1"/>
+          <!-- traffic light dots -->
+          <circle cx="16" cy="17" r="3" fill="#1a6bcc" fill-opacity="0.5"/>
+          <circle cx="25" cy="17" r="3" fill="#1a6bcc" fill-opacity="0.35"/>
+          <circle cx="34" cy="17" r="3" fill="#1a6bcc" fill-opacity="0.2"/>
+          <!-- prompt line 1 -->
+          <text x="12" y="36" font-size="9" font-family="monospace" fill="#1a6bcc" fill-opacity="0.7">$ show sys status</text>
+          <!-- prompt line 2 -->
+          <text x="12" y="47" font-size="9" font-family="monospace" fill="#1a6bcc" fill-opacity="0.5">$ get router info</text>
+          <!-- prompt line 3 (cursor) -->
+          <text x="12" y="57" font-size="9" font-family="monospace" fill="#1a6bcc" fill-opacity="0.35">$ diagnose_</text>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">COMMAND REFERENCE · FORTIOS</div>
+      <div class="card-name">CLI Commands</div>
+      <div class="card-desc">Every show, get, diagnose, and config command — with syntax, output to expect, and the exam scenario where it appears.</div>
+      <div class="card-meta">
+        <span class="card-pill">FortiOS CLI</span>
+        <span class="card-pill">Quick ref</span>
+        <span class="card-pill">All topics</span>
+      </div>
+      <div class="card-arrow">
+        Open CLI Reference
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Exam Traps -->
+  <a class="hub-card type-traps" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="traps-icon">
+          <!-- warning triangle -->
+          <path d="M36 10 L66 60 L6 60 Z" fill="#a32d2d" fill-opacity="0.12" stroke="#a32d2d" stroke-width="2.5" stroke-linejoin="round"/>
+          <!-- exclamation body -->
+          <rect x="33" y="26" width="6" height="16" rx="3" fill="#a32d2d" fill-opacity="0.6"/>
+          <!-- exclamation dot -->
+          <circle cx="36" cy="50" r="3.5" fill="#a32d2d" fill-opacity="0.65"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">GOTCHAS · EXAM TRAPS</div>
+      <div class="card-name">Exam Traps</div>
+      <div class="card-desc">The wrong answers that look right — common confusions, edge cases, and the distractor logic examiners rely on.</div>
+      <div class="card-meta">
+        <span class="card-pill">Trap patterns</span>
+        <span class="card-pill">All domains</span>
+        <span class="card-pill">Last-minute</span>
+      </div>
+      <div class="card-arrow">
+        Open Exam Traps
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+  <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <span style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--ink-muted);">Thirty seconds each. Small and relentless wins.</span>
+  <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · Study Nibbles</div>
+</footer>
+
+<script src="../assets/transitions.js"></script>
+</body>
+</html>

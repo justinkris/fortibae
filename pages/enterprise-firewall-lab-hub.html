@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — Lab Challenges</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    padding: 40px 20px 80px;
+  }
+
+  .breadcrumb-wrap {
+    position: absolute;
+    top: 40px;
+    left: 60px;
+  }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .page-title .day-badge { display: inline-flex; margin-bottom: 14px; }
+  .page-title .day-badge-dot { background: #62a30e; }
+  .page-title h1 { font-size: 48px; }
+  .page-title p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ── HUB CARD BASE ── */
+  .hub-card {
+    width: 300px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease,
+                border-color 0.3s ease;
+  }
+
+  /* shine sweep */
+  .hub-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -80%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.22) 50%, transparent);
+    transform: skewX(-15deg);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .hub-card:hover::before { animation: card-shine 0.55s ease forwards; }
+  @keyframes card-shine { to { left: 160%; } }
+
+  /* ── PER-CARD HOVER ── */
+  .hub-card.type-config:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1.5deg);
+    box-shadow: 0 32px 64px rgba(98,163,14,0.3), 0 0 0 2px #c8e888;
+    border-color: #c8e888;
+  }
+  .hub-card.type-trouble:hover {
+    transform: translateY(-22px) scale(1.05) rotate(2deg);
+    box-shadow: 0 32px 64px rgba(255,107,53,0.3), 0 0 0 2px #ffd5c0;
+    border-color: #ffd5c0;
+  }
+  .hub-card.type-design:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-2deg);
+    box-shadow: 0 32px 64px rgba(26,107,204,0.3), 0 0 0 2px #b3ccf0;
+    border-color: #b3ccf0;
+  }
+
+  /* image tints on hover */
+  .hub-card .card-img { transition: background 0.3s ease; overflow: hidden; }
+  .hub-card.type-config:hover  .card-img { background: #d8f0a8; }
+  .hub-card.type-trouble:hover .card-img { background: #ffd4b8; }
+  .hub-card.type-design:hover  .card-img { background: #b8d5f5; }
+
+  /* arrow nudge */
+  .hub-card:hover .card-arrow svg {
+    animation: arrow-nudge 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  }
+  @keyframes arrow-nudge { to { transform: translateX(5px); } }
+
+  /* ── SVG ICON ANIMATIONS ── */
+  .hub-card.type-config:hover .config-icon {
+    animation: config-rise 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes config-rise { to { transform: translateY(-5px); } }
+
+  .hub-card.type-trouble:hover .trouble-wrench {
+    animation: wrench-rotate 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes wrench-rotate { to { transform: rotate(-5deg); } }
+
+  .hub-card.type-design:hover .design-icon {
+    animation: design-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes design-pop { to { transform: scale(1.04) translateY(-3px); } }
+
+  /* ── CARD IMAGE AREA ── */
+  .card-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hub-card.type-config  .card-img { background: #f4fae0; border-bottom-color: #c8e888; }
+  .hub-card.type-trouble .card-img { background: #fff3ec; border-bottom-color: #ffd5c0; }
+  .hub-card.type-design  .card-img { background: #e8f0fb; border-bottom-color: #b3ccf0; }
+  .card-img svg { width: 80px; height: 80px; }
+
+  /* ── CARD BODY ── */
+  .card-body {
+    padding: 20px 22px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+  .hub-card.type-config  .card-label { color: #62a30e; }
+  .hub-card.type-trouble .card-label { color: #ff6b35; }
+  .hub-card.type-design  .card-label { color: #1a6bcc; }
+
+  .card-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.65;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-desc {
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 4px;
+  }
+  .card-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-meta {
+    max-height: 60px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+  .card-pill {
+    font-size: 10px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+    background: var(--cream-dark);
+  }
+  .card-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-arrow {
+    max-height: 40px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+  .hub-card.type-config  .card-arrow { color: #62a30e; }
+  .hub-card.type-trouble .card-arrow { color: #ff6b35; }
+  .hub-card.type-design  .card-arrow { color: #1a6bcc; }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb-wrap">
+  <div class="breadcrumb">
+    <a href="../index.html">NSE7</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Enterprise Firewall 7.6</span>
+    <span class="breadcrumb-sep">/</span>
+    <span>Lab Challenges</span>
+  </div>
+</div>
+
+<div class="page-title">
+  <div class="day-badge">
+    <span class="day-badge-dot"></span>
+    LAB CHALLENGES · ENTERPRISE FIREWALL 7.6
+  </div>
+  <h1>Pick your <em>lab</em></h1>
+  <p>Hands-on FortiGate scenarios. Configure, break, and troubleshoot your way through the exam domains — the fastest way to make the theory stick.</p>
+</div>
+
+<div class="card-row">
+
+  <!-- Configuration Labs -->
+  <a class="hub-card type-config" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="config-icon">
+          <!-- terminal frame -->
+          <rect x="6" y="10" width="60" height="52" rx="6" fill="#62a30e" fill-opacity="0.1" stroke="#62a30e" stroke-width="2"/>
+          <!-- title bar -->
+          <rect x="6" y="10" width="60" height="13" rx="6" fill="#62a30e" fill-opacity="0.3"/>
+          <rect x="6" y="18" width="60" height="5" fill="#62a30e" fill-opacity="0.1"/>
+          <!-- traffic dots -->
+          <circle cx="16" cy="16.5" r="2.5" fill="#62a30e" fill-opacity="0.55"/>
+          <circle cx="24" cy="16.5" r="2.5" fill="#62a30e" fill-opacity="0.35"/>
+          <circle cx="32" cy="16.5" r="2.5" fill="#62a30e" fill-opacity="0.2"/>
+          <!-- config lines -->
+          <rect x="12" y="30" width="14" height="4" rx="1.5" fill="#62a30e" fill-opacity="0.55"/>
+          <rect x="28" y="30" width="28" height="4" rx="1.5" fill="#62a30e" fill-opacity="0.35"/>
+          <rect x="12" y="40" width="10" height="4" rx="1.5" fill="#62a30e" fill-opacity="0.4"/>
+          <rect x="24" y="40" width="32" height="4" rx="1.5" fill="#62a30e" fill-opacity="0.25"/>
+          <rect x="12" y="50" width="14" height="4" rx="1.5" fill="#62a30e" fill-opacity="0.3"/>
+          <!-- blinking cursor -->
+          <rect x="28" y="50" width="6" height="4" rx="1" fill="#62a30e" fill-opacity="0.55"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">BUILD IT · ALL DOMAINS</div>
+      <div class="card-name">Configuration Labs</div>
+      <div class="card-desc">Step-by-step build scenarios — start with a blank FortiGate and configure each feature from scratch following the exam objectives.</div>
+      <div class="card-meta">
+        <span class="card-pill">All domains</span>
+        <span class="card-pill">Guided steps</span>
+        <span class="card-pill">CLI + GUI</span>
+      </div>
+      <div class="card-arrow">
+        Open Config Labs
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Troubleshooting Labs -->
+  <a class="hub-card type-trouble" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- network link with break -->
+        <g class="trouble-link">
+          <circle cx="14" cy="36" r="8" fill="#ff6b35" fill-opacity="0.15" stroke="#ff6b35" stroke-width="2"/>
+          <circle cx="58" cy="36" r="8" fill="#ff6b35" fill-opacity="0.15" stroke="#ff6b35" stroke-width="2"/>
+          <!-- broken link left segment -->
+          <line x1="22" y1="36" x2="30" y2="32" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"/>
+          <!-- X break -->
+          <line x1="33" y1="30" x2="39" y2="42" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="39" y1="30" x2="33" y2="42" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- broken link right segment -->
+          <line x1="42" y1="32" x2="50" y2="36" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <!-- wrench -->
+        <g class="trouble-wrench" style="transform-origin: 54px 54px;">
+          <path d="M44 56 Q48 50 54 50 Q58 50 60 54 Q62 58 58 62 Q54 64 50 62 L36 66 Z" fill="#ff6b35" fill-opacity="0.25" stroke="#ff6b35" stroke-width="1.8" stroke-linejoin="round"/>
+          <circle cx="56" cy="54" r="3" fill="#ff6b35" fill-opacity="0.45"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">BREAK &amp; FIX · ALL DOMAINS</div>
+      <div class="card-name">Troubleshooting Labs</div>
+      <div class="card-desc">Something is broken — you have the logs, the topology, and the symptoms. Find the fault and fix it before the SLA expires.</div>
+      <div class="card-meta">
+        <span class="card-pill">Fault scenarios</span>
+        <span class="card-pill">Diagnose cmds</span>
+        <span class="card-pill">Time pressure</span>
+      </div>
+      <div class="card-arrow">
+        Open Troubleshooting
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Design Challenges -->
+  <a class="hub-card type-design" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="design-icon">
+          <!-- top node -->
+          <circle cx="36" cy="12" r="8" fill="#1a6bcc" fill-opacity="0.2" stroke="#1a6bcc" stroke-width="2"/>
+          <!-- bottom-left node -->
+          <circle cx="14" cy="56" r="8" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="2"/>
+          <!-- bottom-right node -->
+          <circle cx="58" cy="56" r="8" fill="#1a6bcc" fill-opacity="0.15" stroke="#1a6bcc" stroke-width="2"/>
+          <!-- edges -->
+          <line x1="29" y1="18" x2="20" y2="49" stroke="#1a6bcc" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="43" y1="18" x2="52" y2="49" stroke="#1a6bcc" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="22" y1="56" x2="50" y2="56" stroke="#1a6bcc" stroke-width="1.8" stroke-linecap="round"/>
+          <!-- node labels -->
+          <rect x="29" y="8" width="14" height="8" rx="2" fill="#1a6bcc" fill-opacity="0.35"/>
+          <rect x="7" y="52" width="14" height="8" rx="2" fill="#1a6bcc" fill-opacity="0.28"/>
+          <rect x="51" y="52" width="14" height="8" rx="2" fill="#1a6bcc" fill-opacity="0.28"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">ARCHITECTURE · DESIGN</div>
+      <div class="card-name">Design Challenges</div>
+      <div class="card-desc">Given a set of requirements, choose and justify the right architecture — HA mode, VPN topology, VDOM segmentation, or routing design.</div>
+      <div class="card-meta">
+        <span class="card-pill">Architecture</span>
+        <span class="card-pill">Decision trees</span>
+        <span class="card-pill">Exam scenarios</span>
+      </div>
+      <div class="card-arrow">
+        Open Design Challenges
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+  <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <span style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--ink-muted);">Config you've typed once won't be forgotten in the exam room.</span>
+  <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · Lab Challenges</div>
+</footer>
+
+<script src="../assets/transitions.js"></script>
+</body>
+</html>

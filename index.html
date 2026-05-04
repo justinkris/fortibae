@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Enterprise Firewall 7.6</title>
@@ -14,7 +14,7 @@
     align-items: center;
     justify-content: center;
     background: var(--cream);
-    padding: 40px 20px;
+    padding: 40px 20px 160px;
   }
 
   .page-title {
@@ -23,13 +23,22 @@
   }
   .page-title .day-badge { display: inline-flex; margin-bottom: 14px; }
   .page-title h1 { font-size: 48px; }
+  .page-tagline {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
 
   .card-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 280px);
     gap: 28px;
-    flex-wrap: wrap;
-    justify-content: center;
   }
+  .nav-card:hover { z-index: 2; }
+  .card-img svg { width: 100%; height: 100%; display: block; }
 
   .nav-card {
     width: 280px;
@@ -78,6 +87,173 @@
   }
   @keyframes arrow-nudge { to { transform: translateX(5px); } }
 
+  /* ── PER-CARD HOVER VARIANTS ── */
+  .nav-card.c-blueprint:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1.5deg);
+    box-shadow: 0 32px 64px rgba(26,107,204,0.3), 0 0 0 2px var(--blue-border);
+    border-color: var(--blue-border);
+  }
+  .nav-card.c-guide:hover {
+    transform: translateY(-22px) scale(1.05) rotate(1.5deg);
+    box-shadow: 0 32px 64px rgba(255,107,53,0.32), 0 0 0 2px var(--orange-border);
+    border-color: var(--orange-border);
+  }
+  .nav-card.c-notebook:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1deg);
+    box-shadow: 0 32px 64px rgba(163,45,45,0.3), 0 0 0 2px var(--red-border);
+    border-color: var(--red-border);
+  }
+  .nav-card.c-guides:hover {
+    transform: translateY(-22px) scale(1.05) rotate(2deg);
+    box-shadow: 0 32px 64px rgba(160,124,0,0.28), 0 0 0 2px #ffe680;
+    border-color: #ffe680;
+  }
+  .nav-card.c-bites:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1.5deg);
+    box-shadow: 0 32px 64px rgba(58,125,68,0.3), 0 0 0 2px var(--green-border);
+    border-color: var(--green-border);
+  }
+  .nav-card.c-nibbles:hover {
+    transform: translateY(-22px) scale(1.05) rotate(2deg);
+    box-shadow: 0 32px 64px rgba(92,53,204,0.3), 0 0 0 2px var(--purple-border);
+    border-color: var(--purple-border);
+  }
+  .nav-card.c-palace:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1deg);
+    box-shadow: 0 32px 64px rgba(194,48,110,0.3), 0 0 0 2px #f5b8d8;
+    border-color: #f5b8d8;
+  }
+  .nav-card.c-exam:hover {
+    transform: translateY(-22px) scale(1.05) rotate(1.5deg);
+    box-shadow: 0 32px 64px rgba(13,148,136,0.3), 0 0 0 2px #99d9d5;
+    border-color: #99d9d5;
+  }
+
+  .nav-card.c-lab:hover {
+    transform: translateY(-22px) scale(1.05) rotate(1.5deg);
+    box-shadow: 0 32px 64px rgba(98,163,14,0.3), 0 0 0 2px #c8e888;
+    border-color: #c8e888;
+  }
+
+  /* grid positions for row 3 */
+  .nav-card.c-lab    { grid-column: 1; }
+  .nav-card.c-palace { grid-column: 2; }
+  .nav-card.c-exam   { grid-column: 3; }
+
+  /* image tints */
+  .nav-card.c-blueprint:hover .card-img { background: #b8d5f5 !important; }
+  .nav-card.c-guide:hover     .card-img { background: #ffd4b8 !important; }
+  .nav-card.c-notebook:hover  .card-img { background: #f7c1c1 !important; }
+  .nav-card.c-guides:hover    .card-img { background: #fff0a0 !important; }
+  .nav-card.c-bites:hover     .card-img { background: #c6e6ca !important; }
+  .nav-card.c-nibbles:hover   .card-img { background: #d4ccf5 !important; }
+  .nav-card.c-palace:hover    .card-img { background: #f9c8e3 !important; }
+  .nav-card.c-lab:hover       .card-img { background: #d8f0a8 !important; }
+  .nav-card.c-exam:hover      .card-img { background: #b3e8e5 !important; }
+
+  /* ── SVG ICON ANIMATIONS ── */
+  /* Blueprint rows lift */
+  .nav-card.c-blueprint:hover .idx-rows {
+    animation: rows-lift 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes rows-lift { to { transform: translateY(-5px); } }
+
+  /* Topic Guide doc rises */
+  .nav-card.c-guide:hover .idx-doc {
+    animation: doc-rise 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes doc-rise { to { transform: translateY(-7px) scale(1.03); } }
+
+  /* NotebookLM mic rocks */
+  .idx-mic { transform-origin: 140px 148px; }
+  .nav-card.c-notebook:hover .idx-mic {
+    animation: idx-mic-rock 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes idx-mic-rock {
+    0%   { transform: rotate(0deg)   scale(1); }
+    22%  { transform: rotate(-18deg) scale(1.1); }
+    48%  { transform: rotate(12deg)  scale(1.08); }
+    70%  { transform: rotate(-5deg)  scale(1.09); }
+    100% { transform: rotate(0deg)   scale(1.08); }
+  }
+
+  /* Study Guides pages spread */
+  .idx-page-l { transform-origin: 140px 175px; }
+  .idx-page-r { transform-origin: 140px 175px; }
+  .nav-card.c-guides:hover .idx-page-l {
+    animation: page-spread-l 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .nav-card.c-guides:hover .idx-page-r {
+    animation: page-spread-r 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s forwards;
+  }
+  @keyframes page-spread-l { to { transform: rotate(-5deg) translateX(-5px); } }
+  @keyframes page-spread-r { to { transform: rotate(5deg)  translateX(5px);  } }
+
+  /* Study Bites blocks rise */
+  .nav-card.c-bites:hover .idx-blocks {
+    animation: blocks-rise 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes blocks-rise { to { transform: translateY(-6px); } }
+
+  /* Study Nibbles pills drift */
+  .nav-card.c-nibbles:hover .idx-pills {
+    animation: pills-drift 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes pills-drift { to { transform: scale(1.07) translateY(-4px); } }
+
+  /* Memory Palace rises */
+  .nav-card.c-palace:hover .idx-palace {
+    animation: palace-rise 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes palace-rise { to { transform: translateY(-6px) scale(1.02); } }
+
+  /* Lab flask bubbles float */
+  .nav-card.c-lab:hover .idx-flask {
+    animation: flask-bubble 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes flask-bubble { to { transform: translateY(-5px) scale(1.03); } }
+
+  /* Mock Exam sheet lifts */
+  .nav-card.c-exam:hover .idx-exam {
+    animation: exam-lift 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes exam-lift { to { transform: translateY(-5px); } }
+
+  /* per-card arrow color overrides */
+  .nav-card.c-blueprint .card-arrow { color: var(--blue); }
+  .nav-card.c-guides    .card-arrow { color: #a07c00; }
+  .nav-card.c-notebook  .card-arrow { color: var(--red); }
+  .nav-card.c-bites     .card-arrow { color: var(--green); }
+  .nav-card.c-nibbles   .card-arrow { color: var(--purple); }
+  .nav-card.c-lab       .card-arrow { color: #62a30e; }
+  .nav-card.c-palace    .card-arrow { color: #c2306e; }
+  .nav-card.c-exam      .card-arrow { color: #0d9488; }
+
+  /* ── REMEMBER ── */
+  .info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .info-remember {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--orange);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .info-text {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+
   /* image placeholder */
   .card-img {
     width: 100%;
@@ -124,10 +300,18 @@
     font-size: 12px;
     color: var(--ink-muted);
     line-height: 1.6;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .nav-card:hover .card-desc {
+    max-height: 100px;
+    opacity: 1;
     margin-top: 2px;
   }
   .card-arrow {
-    margin-top: 14px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -135,6 +319,16 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     color: var(--orange);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .nav-card:hover .card-arrow {
+    max-height: 40px;
+    opacity: 1;
+    margin-top: 8px;
   }
 </style>
 </head>
@@ -146,14 +340,40 @@
     FORTIOS 7.6 · ENTERPRISE FIREWALL
   </div>
   <h1>Choose your <em>resource</em></h1>
+  <p class="page-tagline">You've put in the work. Every session compounds. You're closer than you think.</p>
 </div>
 
 <div class="card-row">
 
   <!-- Blueprint -->
-  <a class="nav-card" href="pages/enterprise-firewall-blueprint.html">
+  <a class="nav-card c-blueprint" href="pages/enterprise-firewall-blueprint.html">
     <div class="card-img">
-      <img src="assets/icon-blue-print.png" alt="Blueprint icon">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#e8f0fb"/>
+        <g class="idx-rows">
+        <rect x="20" y="18"  width="240" height="30" rx="4" fill="#1a6bcc" fill-opacity="0.1"  stroke="#1a6bcc" stroke-width="1.5" opacity="0.8"/>
+        <rect x="20" y="56"  width="240" height="30" rx="4" fill="#1a6bcc" fill-opacity="0.1"  stroke="#1a6bcc" stroke-width="1.5" opacity="0.8"/>
+        <rect x="20" y="94"  width="240" height="30" rx="4" fill="#1a6bcc" fill-opacity="0.1"  stroke="#1a6bcc" stroke-width="1.5" opacity="0.8"/>
+        <rect x="20" y="132" width="240" height="30" rx="4" fill="#1a6bcc" fill-opacity="0.07" stroke="#1a6bcc" stroke-width="1.5" opacity="0.6"/>
+        <rect x="20" y="170" width="240" height="30" rx="4" fill="#1a6bcc" fill-opacity="0.05" stroke="#1a6bcc" stroke-width="1"   opacity="0.5"/>
+        <rect x="30" y="26"  width="14" height="14" rx="3" fill="#1a6bcc" fill-opacity="0.18" stroke="#1a6bcc" stroke-width="1.5"/>
+        <path d="M33 33 L37 37 L43 29" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="54" y="28"  width="110" height="6" rx="2" fill="#1a6bcc" fill-opacity="0.5"/>
+        <rect x="172" y="28" width="60"  height="6" rx="2" fill="#1a6bcc" fill-opacity="0.2"/>
+        <rect x="30" y="64"  width="14" height="14" rx="3" fill="#1a6bcc" fill-opacity="0.18" stroke="#1a6bcc" stroke-width="1.5"/>
+        <path d="M33 71 L37 75 L43 67" stroke="#1a6bcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="54" y="66"  width="86"  height="6" rx="2" fill="#1a6bcc" fill-opacity="0.5"/>
+        <rect x="148" y="66" width="80"  height="6" rx="2" fill="#1a6bcc" fill-opacity="0.2"/>
+        <rect x="30" y="102" width="14" height="14" rx="3" fill="#1a6bcc" fill-opacity="0.18" stroke="#1a6bcc" stroke-width="1.5"/>
+        <rect x="54" y="104" width="130" height="6" rx="2" fill="#1a6bcc" fill-opacity="0.38"/>
+        <rect x="192" y="104" width="40" height="6" rx="2" fill="#1a6bcc" fill-opacity="0.18"/>
+        <rect x="30" y="140" width="14" height="14" rx="3" fill="#1a6bcc" fill-opacity="0.14" stroke="#1a6bcc" stroke-width="1.5"/>
+        <rect x="54" y="142" width="96"  height="6" rx="2" fill="#1a6bcc" fill-opacity="0.32"/>
+        <rect x="158" y="142" width="72" height="6" rx="2" fill="#1a6bcc" fill-opacity="0.18"/>
+        <rect x="30" y="178" width="14" height="14" rx="3" fill="#1a6bcc" fill-opacity="0.1"  stroke="#1a6bcc" stroke-width="1" opacity="0.6"/>
+        <rect x="54" y="180" width="76"  height="6" rx="2" fill="#1a6bcc" fill-opacity="0.28"/>
+        </g>
+      </svg>
     </div>
     <div class="card-body">
       <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
@@ -166,26 +386,63 @@
     </div>
   </a>
 
-  <!-- Study Guide -->
-  <a class="nav-card" href="pages/enterprise-firewall-study-guide.html">
+  <!-- Topic Guide -->
+  <a class="nav-card c-guide" href="pages/enterprise-firewall-study-guide.html">
     <div class="card-img">
-      <img src="assets/icon-study-guide.png" alt="Study Guide icon">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#fff3ec"/>
+        <rect x="52" y="32" width="190" height="158" rx="5" fill="#ff6b35" fill-opacity="0.06" stroke="#ff6b35" stroke-width="1" transform="rotate(2 147 111)"/>
+        <g class="idx-doc">
+        <rect x="44" y="22" width="192" height="162" rx="6" fill="#fef9f0" stroke="#ff6b35" stroke-width="2"/>
+        <rect x="44" y="22" width="192" height="32" rx="6" fill="#ff6b35" fill-opacity="0.2"/>
+        <rect x="60" y="31"  width="90"  height="9" rx="2.5" fill="#ff6b35" fill-opacity="0.55"/>
+        <rect x="158" y="33" width="50"  height="5" rx="2"   fill="#ff6b35" fill-opacity="0.3"/>
+        <rect x="60" y="70"  width="164" height="6" rx="2"   fill="#ff6b35" fill-opacity="0.35"/>
+        <rect x="60" y="82"  width="140" height="5" rx="2"   fill="#ff6b35" fill-opacity="0.2"/>
+        <rect x="60" y="93"  width="155" height="5" rx="2"   fill="#ff6b35" fill-opacity="0.2"/>
+        <rect x="60" y="111" width="164" height="32" rx="4"  fill="#ff6b35" fill-opacity="0.1" stroke="#ff6b35" stroke-width="1.5"/>
+        <rect x="68" y="120" width="108" height="5" rx="2"   fill="#ff6b35" fill-opacity="0.45"/>
+        <rect x="68" y="130" width="82"  height="5" rx="2"   fill="#ff6b35" fill-opacity="0.25"/>
+        <rect x="60" y="155" width="164" height="5" rx="2"   fill="#ff6b35" fill-opacity="0.2"/>
+        <rect x="60" y="167" width="124" height="5" rx="2"   fill="#ff6b35" fill-opacity="0.2"/>
+        </g>
+      </svg>
     </div>
     <div class="card-body">
       <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
-      <div class="card-name">Study Guide</div>
+      <div class="card-name">Topic Guide</div>
       <div class="card-desc">Full lesson notes with tables, flow diagrams, exam callouts, and scenario-based practice questions.</div>
       <div class="card-arrow">
-        Open Study Guide
+        Open Topic Guide
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
       </div>
     </div>
   </a>
 
   <!-- NotebookLM Prompts -->
-  <a class="nav-card" href="pages/enterprise-firewall-notebooklm-hub.html">
+  <a class="nav-card c-notebook" href="pages/enterprise-firewall-notebooklm-hub.html">
     <div class="card-img">
-      <img src="assets/icon-study-guide.png" alt="NotebookLM icon">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#fce8e8"/>
+        <g class="idx-mic">
+        <rect x="120" y="32" width="40" height="78" rx="20" fill="#a32d2d" fill-opacity="0.18" stroke="#a32d2d" stroke-width="3"/>
+        <line x1="140" y1="110" x2="140" y2="148" stroke="#a32d2d" stroke-width="3" stroke-linecap="round"/>
+        <path d="M112 148 Q140 162 168 148" stroke="#a32d2d" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="140" cy="71" r="7" fill="#a32d2d"/>
+        <path d="M96 50 Q84 71 96 92" stroke="#a32d2d" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+        <path d="M80 40 Q64 71 80 102" stroke="#a32d2d" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.28"/>
+        <path d="M184 50 Q196 71 184 92" stroke="#a32d2d" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+        <path d="M200 40 Q216 71 200 102" stroke="#a32d2d" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.28"/>
+        <line x1="88"  y1="188" x2="88"  y2="175" stroke="#a32d2d" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+        <line x1="104" y1="188" x2="104" y2="165" stroke="#a32d2d" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+        <line x1="120" y1="188" x2="120" y2="158" stroke="#a32d2d" stroke-width="3" stroke-linecap="round" opacity="0.65"/>
+        <line x1="136" y1="188" x2="136" y2="153" stroke="#a32d2d" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="152" y1="188" x2="152" y2="153" stroke="#a32d2d" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="168" y1="188" x2="168" y2="158" stroke="#a32d2d" stroke-width="3" stroke-linecap="round" opacity="0.65"/>
+        <line x1="184" y1="188" x2="184" y2="165" stroke="#a32d2d" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+        <line x1="200" y1="188" x2="200" y2="175" stroke="#a32d2d" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+        </g>
+      </svg>
     </div>
     <div class="card-body">
       <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
@@ -198,15 +455,298 @@
     </div>
   </a>
 
+  <!-- Study Guides -->
+  <a class="nav-card c-guides" href="pages/enterprise-firewall-study-guides-hub.html">
+    <div class="card-img">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#fffbe6"/>
+        <g class="idx-page-l">
+        <path d="M140 175 L55 163 L55 38 L140 50 Z" fill="white" stroke="#a07c00" stroke-width="2.5" stroke-linejoin="round"/>
+        <line x1="72"  y1="76"  x2="128" y2="80"  stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <line x1="72"  y1="93"  x2="128" y2="96"  stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        <line x1="72"  y1="110" x2="110" y2="113" stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+        <line x1="72"  y1="127" x2="128" y2="130" stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        <line x1="72"  y1="144" x2="118" y2="146" stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+        <rect x="72"  y="60" width="56" height="8" rx="2" fill="#a07c00" fill-opacity="0.25"/>
+        </g>
+        <g class="idx-page-r">
+        <path d="M140 175 L225 163 L225 38 L140 50 Z" fill="white" stroke="#a07c00" stroke-width="2.5" stroke-linejoin="round"/>
+        <line x1="140" y1="50" x2="140" y2="175" stroke="#a07c00" stroke-width="3"/>
+        <line x1="152" y1="76"  x2="208" y2="80"  stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <line x1="152" y1="93"  x2="208" y2="96"  stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        <line x1="152" y1="110" x2="190" y2="113" stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+        <line x1="152" y1="127" x2="208" y2="130" stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        <line x1="152" y1="144" x2="194" y2="146" stroke="#a07c00" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+        <rect x="152" y="60" width="56" height="8" rx="2" fill="#a07c00" fill-opacity="0.25"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
+      <div class="card-name">Study Guides</div>
+      <div class="card-desc">Domain-by-domain written guides covering every exam objective with structured notes and key concept breakdowns.</div>
+      <div class="card-arrow">
+        Open Study Guides
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Study Bites -->
+  <a class="nav-card c-bites" href="pages/enterprise-firewall-study-bites-hub.html">
+    <div class="card-img">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#edf7ee"/>
+        <g class="idx-blocks">
+        <circle cx="37" cy="52"  r="6" fill="#3a7d44" fill-opacity="0.45"/>
+        <circle cx="37" cy="105" r="6" fill="#3a7d44" fill-opacity="0.55"/>
+        <circle cx="37" cy="158" r="6" fill="#3a7d44" fill-opacity="0.35"/>
+        <line x1="37" y1="58"  x2="37" y2="99"  stroke="#3a7d44" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <line x1="37" y1="111" x2="37" y2="152" stroke="#3a7d44" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <rect x="52" y="30"  width="192" height="44" rx="8" fill="#3a7d44" fill-opacity="0.15" stroke="#3a7d44" stroke-width="2.5"/>
+        <rect x="68" y="43"  width="100" height="8" rx="3" fill="#3a7d44" fill-opacity="0.5"/>
+        <rect x="68" y="55"  width="70"  height="6" rx="2" fill="#3a7d44" fill-opacity="0.3"/>
+        <rect x="52" y="83"  width="192" height="44" rx="8" fill="#3a7d44" fill-opacity="0.2"  stroke="#3a7d44" stroke-width="2.5"/>
+        <rect x="68" y="96"  width="120" height="8" rx="3" fill="#3a7d44" fill-opacity="0.5"/>
+        <rect x="68" y="108" width="80"  height="6" rx="2" fill="#3a7d44" fill-opacity="0.3"/>
+        <rect x="52" y="136" width="192" height="44" rx="8" fill="#3a7d44" fill-opacity="0.12" stroke="#3a7d44" stroke-width="2.5"/>
+        <rect x="68" y="149" width="90"  height="8" rx="3" fill="#3a7d44" fill-opacity="0.5"/>
+        <rect x="68" y="161" width="55"  height="6" rx="2" fill="#3a7d44" fill-opacity="0.3"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
+      <div class="card-name">Study Bites</div>
+      <div class="card-desc">Medium-length focused summaries — one key concept per card, ideal for a 10–15 minute focused review session.</div>
+      <div class="card-arrow">
+        Open Study Bites
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Study Nibbles -->
+  <a class="nav-card c-nibbles" href="pages/enterprise-firewall-study-nibbles-hub.html">
+    <div class="card-img">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#ece8ff"/>
+        <g class="idx-pills">
+        <rect x="24"  y="22"  width="64" height="22" rx="11" fill="#5c35cc" fill-opacity="0.2"  stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="102" y="16"  width="52" height="20" rx="10" fill="#5c35cc" fill-opacity="0.32" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="168" y="24"  width="78" height="20" rx="10" fill="#5c35cc" fill-opacity="0.15" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="18"  y="60"  width="48" height="20" rx="10" fill="#5c35cc" fill-opacity="0.28" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="80"  y="55"  width="84" height="22" rx="11" fill="#5c35cc" fill-opacity="0.2"  stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="178" y="58"  width="58" height="20" rx="10" fill="#5c35cc" fill-opacity="0.32" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="30"  y="96"  width="70" height="22" rx="11" fill="#5c35cc" fill-opacity="0.18" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="114" y="92"  width="46" height="20" rx="10" fill="#5c35cc" fill-opacity="0.3"  stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="174" y="96"  width="66" height="22" rx="11" fill="#5c35cc" fill-opacity="0.15" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="22"  y="134" width="58" height="20" rx="10" fill="#5c35cc" fill-opacity="0.24" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="94"  y="130" width="76" height="22" rx="11" fill="#5c35cc" fill-opacity="0.2"  stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="184" y="134" width="52" height="20" rx="10" fill="#5c35cc" fill-opacity="0.32" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="36"  y="170" width="46" height="20" rx="10" fill="#5c35cc" fill-opacity="0.16" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="96"  y="168" width="66" height="22" rx="11" fill="#5c35cc" fill-opacity="0.26" stroke="#5c35cc" stroke-width="1.5"/>
+        <rect x="176" y="170" width="54" height="20" rx="10" fill="#5c35cc" fill-opacity="0.18" stroke="#5c35cc" stroke-width="1.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
+      <div class="card-name">Study Nibbles</div>
+      <div class="card-desc">Quick-fire single facts, CLI commands, and exam traps — 30 seconds each, perfect for last-minute revision.</div>
+      <div class="card-arrow">
+        Open Study Nibbles
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Lab Challenges -->
+  <a class="nav-card c-lab" href="pages/enterprise-firewall-lab-hub.html">
+    <div class="card-img">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#f4fae0"/>
+        <g class="idx-flask">
+          <!-- Flask outline -->
+          <path d="M128 18 L152 18 L162 62 C196 84 212 130 210 172 Q209 182 198 182 L82 182 Q71 182 70 172 C68 130 84 84 118 62 Z"
+                fill="#62a30e" fill-opacity="0.08" stroke="#62a30e" stroke-width="2.5"/>
+          <!-- Stopper/cap -->
+          <rect x="120" y="10" width="40" height="14" rx="4" fill="#62a30e" fill-opacity="0.45" stroke="#62a30e" stroke-width="1.5"/>
+          <!-- Liquid fill -->
+          <path d="M105 112 C90 132 72 154 72 172 Q72 180 82 180 L198 180 Q208 180 208 172 C208 154 190 132 175 112 Z"
+                fill="#62a30e" fill-opacity="0.3"/>
+          <!-- Liquid surface line -->
+          <path d="M105 112 Q140 104 175 112" stroke="#62a30e" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+          <!-- Bubbles in liquid -->
+          <circle cx="122" cy="145" r="6" fill="white" fill-opacity="0.45"/>
+          <circle cx="152" cy="158" r="4.5" fill="white" fill-opacity="0.4"/>
+          <circle cx="136" cy="168" r="3" fill="white" fill-opacity="0.35"/>
+          <circle cx="162" cy="140" r="3.5" fill="white" fill-opacity="0.3"/>
+          <!-- Measurement marks on right side -->
+          <line x1="178" y1="122" x2="186" y2="122" stroke="#62a30e" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <line x1="185" y1="138" x2="194" y2="138" stroke="#62a30e" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <line x1="190" y1="154" x2="200" y2="154" stroke="#62a30e" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <!-- Steam/vapor wisps above liquid -->
+          <path d="M125 108 Q121 98 126 90 Q131 82 127 72" stroke="#62a30e" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.35"/>
+          <path d="M140 106 Q136 94 141 84 Q146 74 142 64" stroke="#62a30e" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.28"/>
+          <path d="M155 108 Q151 98 156 88 Q161 78 157 68" stroke="#62a30e" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.2"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
+      <div class="card-name">Lab Challenges</div>
+      <div class="card-desc">Hands-on FortiGate configuration scenarios — build, break, and troubleshoot your way through every exam domain.</div>
+      <div class="card-arrow">
+        Open Lab Challenges
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Memory Palace -->
+  <a class="nav-card c-palace" href="pages/enterprise-firewall-memory-palace-hub.html">
+    <div class="card-img">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#fce8f3"/>
+        <g class="idx-palace">
+          <!-- Far-left minaret -->
+          <rect x="40" y="65" width="10" height="109" rx="5" fill="#c2306e" fill-opacity="0.32" stroke="#c2306e" stroke-width="1.2"/>
+          <path d="M45 51 C39 54 37 60 37 65 L53 65 C53 60 51 54 45 51 Z" fill="#c2306e" fill-opacity="0.5"/>
+          <line x1="45" y1="41" x2="45" y2="52" stroke="#c2306e" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="45" cy="39" r="3" fill="#c2306e" fill-opacity="0.62"/>
+          <!-- Near-left minaret -->
+          <rect x="76" y="78" width="8" height="96" rx="4" fill="#c2306e" fill-opacity="0.42" stroke="#c2306e" stroke-width="1.2"/>
+          <path d="M80 67 C75 70 73 74 73 78 L87 78 C87 74 85 70 80 67 Z" fill="#c2306e" fill-opacity="0.55"/>
+          <line x1="80" y1="58" x2="80" y2="68" stroke="#c2306e" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="80" cy="56" r="2.5" fill="#c2306e" fill-opacity="0.65"/>
+          <!-- Near-right minaret -->
+          <rect x="196" y="78" width="8" height="96" rx="4" fill="#c2306e" fill-opacity="0.42" stroke="#c2306e" stroke-width="1.2"/>
+          <path d="M200 67 C195 70 193 74 193 78 L207 78 C207 74 205 70 200 67 Z" fill="#c2306e" fill-opacity="0.55"/>
+          <line x1="200" y1="58" x2="200" y2="68" stroke="#c2306e" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="200" cy="56" r="2.5" fill="#c2306e" fill-opacity="0.65"/>
+          <!-- Far-right minaret -->
+          <rect x="230" y="65" width="10" height="109" rx="5" fill="#c2306e" fill-opacity="0.32" stroke="#c2306e" stroke-width="1.2"/>
+          <path d="M235 51 C229 54 227 60 227 65 L243 65 C243 60 241 54 235 51 Z" fill="#c2306e" fill-opacity="0.5"/>
+          <line x1="235" y1="41" x2="235" y2="52" stroke="#c2306e" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="235" cy="39" r="3" fill="#c2306e" fill-opacity="0.62"/>
+          <!-- Lower platform -->
+          <rect x="52" y="174" width="176" height="12" rx="3" fill="#c2306e" fill-opacity="0.38" stroke="#c2306e" stroke-width="1.5"/>
+          <rect x="68" y="167" width="144" height="8" rx="2" fill="#c2306e" fill-opacity="0.26"/>
+          <!-- Side wings -->
+          <rect x="84" y="128" width="38" height="40" rx="2" fill="#c2306e" fill-opacity="0.18" stroke="#c2306e" stroke-width="1.5"/>
+          <rect x="158" y="128" width="38" height="40" rx="2" fill="#c2306e" fill-opacity="0.18" stroke="#c2306e" stroke-width="1.5"/>
+          <!-- Wing arch windows -->
+          <path d="M96 168 L96 150 Q103 142 110 150 L110 168 Z" fill="#c2306e" fill-opacity="0.22"/>
+          <path d="M170 168 L170 150 Q177 142 184 150 L184 168 Z" fill="#c2306e" fill-opacity="0.22"/>
+          <!-- Wing small domes -->
+          <path d="M103 128 C97 122 94 115 94 112 C94 115 112 115 112 112 C112 115 109 122 103 128 Z" fill="#c2306e" fill-opacity="0.4"/>
+          <path d="M177 128 C171 122 168 115 168 112 C168 115 186 115 186 112 C186 115 183 122 177 128 Z" fill="#c2306e" fill-opacity="0.4"/>
+          <!-- Main body -->
+          <rect x="100" y="110" width="80" height="58" rx="3" fill="#c2306e" fill-opacity="0.24" stroke="#c2306e" stroke-width="2"/>
+          <!-- Main iwan arch -->
+          <path d="M118 168 L118 143 Q140 129 162 143 L162 168 Z" fill="#c2306e" fill-opacity="0.32"/>
+          <!-- Central drum -->
+          <rect x="122" y="94" width="36" height="17" rx="3" fill="#c2306e" fill-opacity="0.42" stroke="#c2306e" stroke-width="1.5"/>
+          <!-- Central onion dome -->
+          <path d="M140 27
+                   C 128 33, 110 52, 112 67
+                   C 110 81, 120 92, 122 94
+                   L 158 94
+                   C 160 92, 170 81, 168 67
+                   C 170 52, 152 33, 140 27 Z"
+               fill="#c2306e" fill-opacity="0.5" stroke="#c2306e" stroke-width="2"/>
+          <!-- Dome finial -->
+          <line x1="140" y1="15" x2="140" y2="28" stroke="#c2306e" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="140" cy="13" r="3.5" fill="#c2306e" fill-opacity="0.72"/>
+          <!-- Reflecting pool -->
+          <rect x="106" y="186" width="68" height="6" rx="2" fill="#c2306e" fill-opacity="0.14"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
+      <div class="card-name">Memory Techniques</div>
+      <div class="card-desc">Spatial memory techniques and visual story anchors for locking in the hardest concepts before exam day.</div>
+      <div class="card-arrow">
+        Open Memory Techniques
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Mock Exams -->
+  <a class="nav-card c-exam" href="pages/enterprise-firewall-mock-exams-hub.html">
+    <div class="card-img">
+      <svg viewBox="0 0 280 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="280" height="210" fill="#e6f7f5"/>
+        <g class="idx-exam">
+          <!-- Paper -->
+          <rect x="48" y="16" width="184" height="176" rx="6" fill="white" stroke="#0d9488" stroke-width="2"/>
+          <!-- Header bar -->
+          <rect x="48" y="16" width="184" height="30" rx="6" fill="#0d9488" fill-opacity="0.18"/>
+          <rect x="64" y="24" width="88" height="7" rx="2" fill="#0d9488" fill-opacity="0.55"/>
+          <rect x="160" y="26" width="44" height="4" rx="2" fill="#0d9488" fill-opacity="0.3"/>
+          <!-- Q1 -->
+          <rect x="64" y="62" width="38" height="5" rx="2" fill="#0d9488" fill-opacity="0.35"/>
+          <circle cx="118" cy="64" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="136" cy="64" r="6" fill="#0d9488" fill-opacity="0.65"/>
+          <circle cx="154" cy="64" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="172" cy="64" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <rect x="186" y="60" width="30" height="8" rx="2" fill="#0d9488" fill-opacity="0.1"/>
+          <!-- Q2 -->
+          <rect x="64" y="88" width="30" height="5" rx="2" fill="#0d9488" fill-opacity="0.35"/>
+          <circle cx="118" cy="90" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="136" cy="90" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="154" cy="90" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="172" cy="90" r="6" fill="#0d9488" fill-opacity="0.65"/>
+          <rect x="186" y="86" width="24" height="8" rx="2" fill="#0d9488" fill-opacity="0.1"/>
+          <!-- Q3 -->
+          <rect x="64" y="114" width="44" height="5" rx="2" fill="#0d9488" fill-opacity="0.35"/>
+          <circle cx="118" cy="116" r="6" fill="#0d9488" fill-opacity="0.65"/>
+          <circle cx="136" cy="116" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="154" cy="116" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="172" cy="116" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <rect x="186" y="112" width="34" height="8" rx="2" fill="#0d9488" fill-opacity="0.1"/>
+          <!-- Q4 -->
+          <rect x="64" y="140" width="34" height="5" rx="2" fill="#0d9488" fill-opacity="0.35"/>
+          <circle cx="118" cy="142" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="136" cy="142" r="6" fill="#0d9488" fill-opacity="0.65"/>
+          <circle cx="154" cy="142" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <circle cx="172" cy="142" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.45"/>
+          <rect x="186" y="138" width="28" height="8" rx="2" fill="#0d9488" fill-opacity="0.1"/>
+          <!-- Q5 -->
+          <rect x="64" y="166" width="50" height="5" rx="2" fill="#0d9488" fill-opacity="0.28"/>
+          <circle cx="118" cy="168" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.35"/>
+          <circle cx="136" cy="168" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.35"/>
+          <circle cx="154" cy="168" r="6" fill="#0d9488" fill-opacity="0.5"/>
+          <circle cx="172" cy="168" r="6" stroke="#0d9488" stroke-width="1.5" fill="none" opacity="0.35"/>
+          <rect x="186" y="164" width="36" height="8" rx="2" fill="#0d9488" fill-opacity="0.08"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">ENTERPRISE FIREWALL 7.6</div>
+      <div class="card-name">Mock Exams</div>
+      <div class="card-desc">Full-length practice exams with scenario-based questions across all 10 lessons — timed, scored, and reviewed.</div>
+      <div class="card-arrow">
+        Open Mock Exams
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
 </div>
 
-<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:14px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;gap:20px;">
   <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <span style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--ink-muted);">Every resource you open is a step toward the pass.</span>
   <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · FortiOS</div>
 </footer>
 
 <script>
 </script>
 
+<script src="assets/transitions.js"></script>
 </body>
 </html>

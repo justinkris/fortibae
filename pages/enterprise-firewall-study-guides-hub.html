@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Firewall 7.6 — Study Guides</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/template.css">
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    padding: 40px 20px 80px;
+  }
+
+  .breadcrumb-wrap {
+    position: absolute;
+    top: 40px;
+    left: 60px;
+  }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .page-title .day-badge { display: inline-flex; margin-bottom: 14px; }
+  .page-title .day-badge-dot { background: #a07c00; }
+  .page-title h1 { font-size: 48px; }
+  .page-title p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ── HUB CARD BASE ── */
+  .hub-card {
+    width: 300px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease,
+                border-color 0.3s ease;
+  }
+
+  /* shine sweep */
+  .hub-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -80%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.22) 50%, transparent);
+    transform: skewX(-15deg);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .hub-card:hover::before { animation: card-shine 0.55s ease forwards; }
+  @keyframes card-shine { to { left: 160%; } }
+
+  /* ── PER-CARD HOVER ── */
+  .hub-card.type-notes:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-1.5deg);
+    box-shadow: 0 32px 64px rgba(160,124,0,0.28), 0 0 0 2px #ffe680;
+    border-color: #ffe680;
+  }
+  .hub-card.type-snapshots:hover {
+    transform: translateY(-22px) scale(1.05) rotate(2deg);
+    box-shadow: 0 32px 64px rgba(58,125,68,0.3), 0 0 0 2px var(--green-border);
+    border-color: var(--green-border);
+  }
+  .hub-card.type-rapid:hover {
+    transform: translateY(-22px) scale(1.05) rotate(-2deg);
+    box-shadow: 0 32px 64px rgba(26,107,204,0.3), 0 0 0 2px var(--blue-border);
+    border-color: var(--blue-border);
+  }
+
+  /* image tints on hover */
+  .hub-card .card-img { transition: background 0.3s ease; overflow: hidden; }
+  .hub-card.type-notes:hover     .card-img { background: #fff0a0; }
+  .hub-card.type-snapshots:hover .card-img { background: #c6e6ca; }
+  .hub-card.type-rapid:hover     .card-img { background: #b8d5f5; }
+
+  /* arrow nudge */
+  .hub-card:hover .card-arrow svg {
+    animation: arrow-nudge 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  }
+  @keyframes arrow-nudge { to { transform: translateX(5px); } }
+
+  /* ── SVG ICON ANIMATIONS ── */
+  /* Notes: pages spread */
+  .page-l { transform-origin: 36px 56px; }
+  .page-r { transform-origin: 36px 56px; }
+  .hub-card.type-notes:hover .page-l {
+    animation: page-l-spread 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .hub-card.type-notes:hover .page-r {
+    animation: page-r-spread 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s forwards;
+  }
+  @keyframes page-l-spread { to { transform: rotate(-6deg) translateX(-4px); } }
+  @keyframes page-r-spread { to { transform: rotate(6deg)  translateX(4px);  } }
+
+  /* Snapshots: panels rise */
+  .hub-card.type-snapshots:hover .domain-panels {
+    animation: panels-rise 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes panels-rise { to { transform: translateY(-5px); } }
+
+  /* Rapid: list drifts right */
+  .hub-card.type-rapid:hover .review-list {
+    animation: list-drift 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes list-drift { to { transform: translateX(4px); } }
+
+  /* ── CARD IMAGE AREA ── */
+  .card-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hub-card.type-notes     .card-img { background: #fffbe6; border-bottom-color: #ffe680; }
+  .hub-card.type-snapshots .card-img { background: var(--green-light); border-bottom-color: var(--green-border); }
+  .hub-card.type-rapid     .card-img { background: var(--blue-light); border-bottom-color: var(--blue-border); }
+  .card-img svg { width: 80px; height: 80px; }
+
+  /* ── CARD BODY ── */
+  .card-body {
+    padding: 20px 22px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+  .hub-card.type-notes     .card-label { color: #a07c00; }
+  .hub-card.type-snapshots .card-label { color: var(--green); }
+  .hub-card.type-rapid     .card-label { color: var(--blue); }
+
+  .card-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.65;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-desc {
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 4px;
+  }
+  .card-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-meta {
+    max-height: 60px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+  .card-pill {
+    font-size: 10px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+    background: var(--cream-dark);
+  }
+  .card-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .hub-card:hover .card-arrow {
+    max-height: 40px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+  .hub-card.type-notes     .card-arrow { color: #a07c00; }
+  .hub-card.type-snapshots .card-arrow { color: var(--green); }
+  .hub-card.type-rapid     .card-arrow { color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb-wrap">
+  <div class="breadcrumb">
+    <a href="../index.html">NSE7</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Enterprise Firewall 7.6</span>
+    <span class="breadcrumb-sep">/</span>
+    <span>Study Guides</span>
+  </div>
+</div>
+
+<div class="page-title">
+  <div class="day-badge">
+    <span class="day-badge-dot"></span>
+    STUDY GUIDES · ENTERPRISE FIREWALL 7.6
+  </div>
+  <h1>Pick your <em>format</em></h1>
+  <p>Three ways to work through the material. Choose the format that matches how much time you have and where you are in your revision.</p>
+</div>
+
+<div class="card-row">
+
+  <!-- Full Lesson Notes -->
+  <a class="hub-card type-notes" href="enterprise-firewall-study-guide.html">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="page-l">
+          <path d="M36 56 L10 49 L10 14 L36 21 Z" fill="#a07c00" fill-opacity="0.15" stroke="#a07c00" stroke-width="2.5" stroke-linejoin="round"/>
+          <line x1="16" y1="28" x2="32" y2="31" stroke="#a07c00" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
+          <line x1="16" y1="35" x2="32" y2="38" stroke="#a07c00" stroke-width="1.8" stroke-linecap="round" opacity="0.5"/>
+          <line x1="16" y1="42" x2="26" y2="44" stroke="#a07c00" stroke-width="1.8" stroke-linecap="round" opacity="0.4"/>
+          <rect x="16" y="21" width="16" height="4" rx="1.5" fill="#a07c00" fill-opacity="0.3"/>
+        </g>
+        <g class="page-r">
+          <path d="M36 56 L62 49 L62 14 L36 21 Z" fill="#a07c00" fill-opacity="0.15" stroke="#a07c00" stroke-width="2.5" stroke-linejoin="round"/>
+          <line x1="36" y1="21" x2="36" y2="56" stroke="#a07c00" stroke-width="3"/>
+          <line x1="40" y1="28" x2="56" y2="31" stroke="#a07c00" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
+          <line x1="40" y1="35" x2="56" y2="38" stroke="#a07c00" stroke-width="1.8" stroke-linecap="round" opacity="0.5"/>
+          <line x1="40" y1="42" x2="50" y2="44" stroke="#a07c00" stroke-width="1.8" stroke-linecap="round" opacity="0.4"/>
+          <rect x="40" y="21" width="16" height="4" rx="1.5" fill="#a07c00" fill-opacity="0.3"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">COMPREHENSIVE · 10 LESSONS</div>
+      <div class="card-name">Full Lesson Notes</div>
+      <div class="card-desc">Complete structured notes for every lesson — tables, flow diagrams, callouts, and scenario-based practice questions included.</div>
+      <div class="card-meta">
+        <span class="card-pill">10 lessons</span>
+        <span class="card-pill">Full detail</span>
+        <span class="card-pill">All domains</span>
+      </div>
+      <div class="card-arrow">
+        Open Full Notes
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Domain Snapshots -->
+  <a class="hub-card type-snapshots" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="domain-panels">
+          <rect x="6"  y="6"  width="28" height="26" rx="4" fill="#3a7d44" fill-opacity="0.15" stroke="#3a7d44" stroke-width="2"/>
+          <rect x="6"  y="6"  width="28" height="8"  rx="4" fill="#3a7d44" fill-opacity="0.3"/>
+          <rect x="10" y="20" width="20" height="3" rx="1" fill="#3a7d44" fill-opacity="0.4"/>
+          <rect x="10" y="26" width="14" height="3" rx="1" fill="#3a7d44" fill-opacity="0.28"/>
+
+          <rect x="38" y="6"  width="28" height="26" rx="4" fill="#3a7d44" fill-opacity="0.15" stroke="#3a7d44" stroke-width="2"/>
+          <rect x="38" y="6"  width="28" height="8"  rx="4" fill="#3a7d44" fill-opacity="0.3"/>
+          <rect x="42" y="20" width="20" height="3" rx="1" fill="#3a7d44" fill-opacity="0.4"/>
+          <rect x="42" y="26" width="14" height="3" rx="1" fill="#3a7d44" fill-opacity="0.28"/>
+
+          <rect x="6"  y="38" width="28" height="26" rx="4" fill="#3a7d44" fill-opacity="0.12" stroke="#3a7d44" stroke-width="2"/>
+          <rect x="6"  y="38" width="28" height="8"  rx="4" fill="#3a7d44" fill-opacity="0.22"/>
+          <rect x="10" y="52" width="20" height="3" rx="1" fill="#3a7d44" fill-opacity="0.35"/>
+          <rect x="10" y="58" width="12" height="3" rx="1" fill="#3a7d44" fill-opacity="0.22"/>
+
+          <rect x="38" y="38" width="28" height="26" rx="4" fill="#3a7d44" fill-opacity="0.12" stroke="#3a7d44" stroke-width="2"/>
+          <rect x="38" y="38" width="28" height="8"  rx="4" fill="#3a7d44" fill-opacity="0.22"/>
+          <rect x="42" y="52" width="20" height="3" rx="1" fill="#3a7d44" fill-opacity="0.35"/>
+          <rect x="42" y="58" width="12" height="3" rx="1" fill="#3a7d44" fill-opacity="0.22"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">CONDENSED · 5 DOMAINS</div>
+      <div class="card-name">Domain Snapshots</div>
+      <div class="card-desc">One-page summaries per domain — key concepts, comparison tables, and exam callouts distilled to essentials.</div>
+      <div class="card-meta">
+        <span class="card-pill">5 domains</span>
+        <span class="card-pill">Quick read</span>
+        <span class="card-pill">Exam focus</span>
+      </div>
+      <div class="card-arrow">
+        Open Snapshots
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- Rapid Review -->
+  <a class="hub-card type-rapid" href="#">
+    <div class="card-img">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="review-list">
+          <rect x="8"  y="9"  width="56" height="13" rx="3" fill="#1a6bcc" fill-opacity="0.12" stroke="#1a6bcc" stroke-width="1.5"/>
+          <rect x="12" y="13" width="8"  height="5"  rx="1.5" fill="#1a6bcc" fill-opacity="0.55"/>
+          <rect x="24" y="13" width="34" height="4"  rx="1" fill="#1a6bcc" fill-opacity="0.4"/>
+
+          <rect x="8"  y="28" width="56" height="13" rx="3" fill="#1a6bcc" fill-opacity="0.12" stroke="#1a6bcc" stroke-width="1.5"/>
+          <rect x="12" y="32" width="8"  height="5"  rx="1.5" fill="#1a6bcc" fill-opacity="0.55"/>
+          <rect x="24" y="32" width="26" height="4"  rx="1" fill="#1a6bcc" fill-opacity="0.4"/>
+
+          <rect x="8"  y="47" width="56" height="13" rx="3" fill="#1a6bcc" fill-opacity="0.08" stroke="#1a6bcc" stroke-width="1.5"/>
+          <rect x="12" y="51" width="8"  height="5"  rx="1.5" fill="#1a6bcc" fill-opacity="0.35"/>
+          <rect x="24" y="51" width="30" height="4"  rx="1" fill="#1a6bcc" fill-opacity="0.28"/>
+
+          <!-- lightning accent -->
+          <path d="M57 10 L51 22 L55 22 L49 34 L57 20 L53 20 Z" fill="#1a6bcc" fill-opacity="0.55"/>
+        </g>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">EXAM PREP · ALL DOMAINS</div>
+      <div class="card-name">Rapid Review</div>
+      <div class="card-desc">Bullet-point facts, CLI commands, and key distinctions — one card per sub-topic, built for last-minute revision.</div>
+      <div class="card-meta">
+        <span class="card-pill">All topics</span>
+        <span class="card-pill">3 min each</span>
+        <span class="card-pill">Exam traps</span>
+      </div>
+      <div class="card-arrow">
+        Open Rapid Review
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<footer style="position:fixed;bottom:0;left:0;right:0;padding:16px 40px;border-top:1px solid var(--border);background:var(--cream-dark);display:flex;justify-content:space-between;align-items:center;">
+  <div class="footer-left">NSE7<span style="color:var(--orange)">.</span></div>
+  <span style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--ink-muted);">The format doesn't matter. Showing up does.</span>
+  <div class="footer-right" style="font-size:11px;color:var(--ink-muted);letter-spacing:0.06em;">Enterprise Firewall 7.6 · Study Guides</div>
+</footer>
+
+<script src="../assets/transitions.js"></script>
+</body>
+</html>
